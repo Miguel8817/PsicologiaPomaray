@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="imagenes/logo.png">
+    <link rel="stylesheet" href="/static/css/agendar_Psicologo.css"
+    <title>Agendar Cita con psicólogo</title>
+</head>
+<body>
+
+    <header>
+        <div class="cita1">
+            <h1>POMARAY - psicólogo</h1>
+            <a href="/usuarios">Inicio</a>
+        </div>
+        
+    </header>
+    
+    <div class="container">
+        <h2>Agendar Cita con psicólogo</h2>
+
+        
+            <label for="psicologo">Seleccionar Psicólogo:</label>
+            <select id="psicologo" name="psicologo" required>
+                <option value="">-- Seleccionar --</option>
+                <option value="1">Dra. Ejemplo 1</option>
+                <option value="2">Dr. Ejemplo 2</option>
+            </select>
+
+        <form action="/Psicologo_cita" method="POST">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="FechaPS" required min="<?php echo date('Y-m-d'); ?>">
+
+            <label for="Hora">Hora:</label>
+            <input type="time" id="hora" name="HoraPS" required>
+
+            <button type="submit" class="guardar-btn">Agendar Cita</button>
+            <div id="mensaje" class="mensaje" style="display:none;"></div>
+        </form>
+
+            <a href="/Profesor_cita" class="link-alternativo">¿Quieres agendar una cita con un profesor?</a>
+        
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('form-cita-psicologo');
+    const mensaje = document.getElementById('mensaje');
+    const fechaInput = document.getElementById('fecha');
+
+    // Establecer fecha mínima como hoy
+    const today = new Date().toISOString().split('T')[0];
+    fechaInput.min = today;
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const fecha = fechaInput.value;
+        const hora = document.getElementById('hora').value;
+
+        // Validar campos vacíos
+        if (!fecha || !hora) {
+            mostrarMensaje('Debe completar todos los campos', 'error');
+            return;
+        }
+
+        // Validar que la fecha no sea anterior a hoy
+        const fechaSeleccionada = new Date(fecha);
+        const fechaActual = new Date();
+        fechaActual.setHours(0, 0, 0, 0);
+
+        if (fechaSeleccionada < fechaActual) {
+            mostrarMensaje('La fecha debe ser igual o posterior a hoy', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch('/Psicologo_cita',  {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.redirected) {
+                mostrarMensaje('Cita enviada correctamente', 'exito');
+
+                // Esperar 2 segundos antes de redirigir
+                setTimeout(() => {
+                    window.location.href = response.url;
+                }, 1500);
+            } else {
+                mostrarMensaje('Cita enviada, pero no se redirigió. Revisa el servidor.', 'error');
+            }
+        } catch (error) {
+            console.error('Error al enviar cita:', error);
+            mostrarMensaje('Error al enviar la cita. Intente de nuevo.', 'error');
+        }
+    });
+
+    function mostrarMensaje(texto, tipo) {
+        mensaje.textContent = texto;
+        mensaje.className = `mensaje mensaje-${tipo}`;
+        mensaje.style.display = 'block';
+
+        setTimeout(() => {
+            mensaje.style.display = 'none';
+        }, 5000);
+    }
+});
+</script>
+
+
+    
+    
+</body>
+</html>

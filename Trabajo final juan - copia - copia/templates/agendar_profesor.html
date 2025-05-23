@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="imagenes/logo.png">
+    <title>Agendar Cita con Profesor</title>
+    <link rel="stylesheet" href="/static/css/agendar_Profesor.css">
+</head>
+<body>
+
+    <header>
+        <div class="cita1">
+            <h1>POMARAY</h1>
+        </div>
+        <a href="/usuarios" style="color: white; text-decoration: none; margin-left: 20px;">Inicio</a>
+    </header>
+
+    <section class="contenido">
+        <div class="formulario">
+            <h2>Agendar Cita con Profesor</h2>
+            
+                <label for="profesor">Seleccionar Profesor:</label>
+                <select id="profesor" name="profesor" required>
+                    <option value="">-- Seleccionar --</option>
+                    <option value="Dr. Juan Pérez">Dr. Juan Pérez</option>
+                    <option value="Dra. Ana Martínez">Dra. Ana Martínez</option>
+                    <option value="Lic. Laura Gómez">Lic. Laura Gómez</option>
+                </select>
+                
+            <form id="form-cita" action="/Profesor_cita" method="POST">
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="FechaPR" required>
+
+                <label for="hora">Hora:</label>
+                <input type="time" id="hora" name="HoraPR" required>
+
+                <button type="submit" class="guardar-btn">Agendar Cita</button>
+                <div id="mensaje" class="mensaje" style="display:none;"></div>
+                <a href="/Psicologo_cita">¿Quieres agendar una cita para el psicólogo?</a>
+            </form>
+        </div>
+    </section>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('form-cita');
+    const mensaje = document.getElementById('mensaje');
+    const fechaInput = document.getElementById('fecha');
+
+    // Establecer fecha mínima como hoy
+    const today = new Date().toISOString().split('T')[0];
+    fechaInput.min = today;
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const fecha = fechaInput.value;
+        const hora = document.getElementById('hora').value;
+
+        // Validar campos vacíos
+        if (!fecha || !hora) {
+            mostrarMensaje('Debe completar todos los campos', 'error');
+            return;
+        }
+
+        // Validar que la fecha no sea anterior a hoy
+        const fechaSeleccionada = new Date(fecha);
+        const fechaActual = new Date();
+        fechaActual.setHours(0, 0, 0, 0);
+
+        if (fechaSeleccionada < fechaActual) {
+            mostrarMensaje('La fecha debe ser igual o posterior a hoy', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch('/Profesor_cita',  {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.redirected) {
+                mostrarMensaje('Cita enviada correctamente', 'exito');
+
+                // Esperar 2 segundos antes de redirigir
+                setTimeout(() => {
+                    window.location.href = response.url;
+                }, 1500);
+            } else {
+                mostrarMensaje('Cita enviada, pero no se redirigió. Revisa el servidor.', 'error');
+            }
+        } catch (error) {
+            console.error('Error al enviar cita:', error);
+            mostrarMensaje('Error al enviar la cita. Intente de nuevo.', 'error');
+        }
+    });
+
+    function mostrarMensaje(texto, tipo) {
+        mensaje.textContent = texto;
+        mensaje.className = `mensaje mensaje-${tipo}`;
+        mensaje.style.display = 'block';
+
+        setTimeout(() => {
+            mensaje.style.display = 'none';
+        }, 5000);
+    }
+});
+</script>
+
+</body>
+</html>
