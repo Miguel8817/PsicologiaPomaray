@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/GestionProfesor.css">
+    <title>CRUD de Citas</title>
+</head>
+<body>
+
+    <div class="volver-container">
+        <a href="/usuarios" class="btn-volver"><span>&larr;</span> Volver al panel de usuarios</a>
+    </div>
+
+    <h1>Cita Profesor</h1>
+
+    <div class="form-container">
+        <h2 class="form-title">Agregar Nueva Cita</h2>
+        <form action="/Guardar_cita_profesor" method="POST">
+            <input type="date" name="FechaPR" placeholder="Fecha de la cita" required>
+            <input type="time" name="HoraPR" placeholder="Hora de la cita" required>
+            <button type="submit">Guardar Cita</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for citas in profesor %}
+                <tr>
+                    <td>{{ citas.1 }}</td>
+                    <td>
+                        {% if citas.2 %}
+                            {{ citas.2 }}
+                        {% else %}
+                            -- --
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button onclick="openEditModal('{{ citas.0 }}', '{{ citas.1 }}', '{{ citas.2 }}')" class="btn btn-edit">Editar</button>
+                        <form action="/Delete_cita_profesor/{{ citas.0 }}" method="POST" class="inline-form">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Editar Cita</h2>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editForm" action="/Editar_cita_profesor" method="POST" onsubmit="event.preventDefault(); submitEditForm(this);">
+                <input type="hidden" id="editId" name="id">
+                <input type="date" id="editName" name="FechaPR" required>
+                <input type="time" id="editEmail" name="HoraPR" required>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const editModal = document.getElementById('editModal');
+
+        function openEditModal(id, fecha, hora) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editName').value = fecha;
+            document.getElementById('editEmail').value = hora;
+            editModal.style.display = 'block';
+        }
+
+        function closeEditModal() {
+            editModal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == editModal) {
+                closeEditModal();
+            }
+        }
+
+        function submitEditForm(form) {
+            fetch(form.action + '/' + document.getElementById('editId').value, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cambios guardados correctamente');
+                    closeEditModal();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error al guardar los cambios');
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+</html>

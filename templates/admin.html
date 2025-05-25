@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Psicología</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <span>Psicología</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item active">
+                        <a href="/admin">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/CRUD">
+                            <i class="fas fa-users"></i>
+                            <span>Usuarios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/GestionCita">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Citas Psicólogo</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/GestionProfesor">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Citas Profesor</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="sidebar-footer">
+                    <a href="/logout" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar sesión</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar..." id="search-input">
+                </div>
+                <div class="user-profile">
+                    <div class="notifications">
+                    </div>
+                    <div class="user-info">
+                        <div class="avatar">{{ session.get('name', 'A')[0] }}{{ session.get('lastName', 'dmin')[0] }}</div>
+                        <div class="user-details">
+                            <span class="username">{{ session.get('name', 'Admin') }} {{ session.get('lastName', '') }}</span>
+                            <span class="user-role">Administrador</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ stats.0 }}</h3>
+                            <p>Usuarios totales</p>
+                            <small>{{ stats.3 }} nuevos (7 días)</small>
+                        </div>
+                    </div>
+                
+                    <div class="stat-card">
+                        <div class="stat-icon bg-purple">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ stats.1 + stats.2 }}</h3>
+                            <p>Citas totales</p>
+                            <small>{{ stats.4 + stats.5 }} hoy</small>
+                        </div>
+                    </div>
+                
+                    <div class="stat-card">
+                        <div class="stat-icon bg-green">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ stats.1 }}</h3>
+                            <p>Citas Psicólogo</p>
+                            <small>{{ stats.4 }} hoy</small>
+                        </div>
+                    </div>
+                
+                    <div class="stat-card">
+                        <div class="stat-icon bg-orange">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ stats.2 }}</h3>
+                            <p>Citas Profesor</p>
+                            <small>{{ stats.5 }} hoy</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2>Usuarios Recientes</h2>
+                        <a href="/CRUD" class="btn-view-all">Ver todos</a>
+                    </div>
+
+                    <div class="recent-users">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Fecha Registro</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.1 }} {{ user.2 }}</td>
+                                    <td>{{ user.3 }}</td>
+                                    <td>{{ user.4 }}</td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2>Actividad Reciente</h2>
+                    </div>
+
+                    
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>Sistema actualizado a versión 1.2.0</p>
+                                <span class="activity-time">Ayer, 15:30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>
