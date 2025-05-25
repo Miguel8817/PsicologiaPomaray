@@ -7,6 +7,8 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config["ENV"] = os.getenv("FLASK_ENV", "production")  
+app.config["DEBUG"] = app.config["ENV"] == "development"
 
 # Configuración MySQL
 app.config['MYSQL_HOST'] = 'gondola.proxy.rlwy.net'
