@@ -25,8 +25,8 @@ COPY . .
 # Expone el puerto (modifica si usas otro)
 EXPOSE 14068
 
-# Establece la variable de entorno para producción si la usas
+# Establece la variable de entorno para producción
 ENV FLASK_ENV=production
 
-# Comando por defecto para correr la app usando waitress en el puerto 14068
-CMD ["waitress-serve", "--host=0.0.0.0", "--port=14068", "app:app"]
+# Comando para correr la app con Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:14068", "--workers", "4", "app:app"]
