@@ -11,13 +11,13 @@ app.secret_key = os.urandom(24)
 app.config["ENV"] = os.getenv("FLASK_ENV", "production")  
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
-# Configuración MySQL
-app.config['MYSQL_HOST'] = os.environ.get('MYSQLHOST')
-app.config['MYSQL_USER'] = os.environ.get('MYSQLUSER')
-app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQLPASSWORD')
-app.config['MYSQL_DB'] = os.environ.get('MYSQLDATABASE')
-app.config['MYSQL_PORT'] = int(os.environ.get('MYSQLPORT', 3306))
-
+# Reemplaza tu configuración actual con esta:
+app.config['MYSQL_HOST'] = os.getenv('gondola.proxy.rlwy.net')
+app.config['MYSQL_USER'] = os.getenv('root')
+app.config['MYSQL_PASSWORD'] = os.getenv('FXdwHwarfhTstLawaFdkVodXPzxBHXLG')
+app.config['MYSQL_DB'] = os.getenv('rialway')
+app.config['MYSQL_PORT'] = int(os.getenv('45362'))  # Puerto estándar MySQL es 3306
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 # -------------------- RUTAS GENERALES --------------------
@@ -424,4 +424,4 @@ def editar_cita_profesor(id):
 # -------------------- INICIAR APLICACIÓN --------------------
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 14068)))
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 45362)))
