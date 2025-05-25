@@ -15,6 +15,14 @@ RUN apt-get update && apt-get install -y \
 # Copia el archivo de requerimientos e instala las dependencias
 COPY requirements.txt .
 
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    build-essential \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+    
+
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia el resto del código del proyecto al contenedor
