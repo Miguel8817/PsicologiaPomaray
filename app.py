@@ -9,10 +9,11 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # Configuración MySQL
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_HOST'] = 'gondola.proxy.rlwy.net'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'psicologia'
+app.config['MYSQL_PASSWORD'] = 'BvStTwybTRaXZGUreUdqUPZKEwVWatPK'
+app.config['MYSQL_DB'] = 'railway'
+app.config['MYSQL_PORT'] = '14068'
 mysql = MySQL(app)
 
 # -------------------- RUTAS GENERALES --------------------
