@@ -5,7 +5,6 @@ import MySQLdb.cursors
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from flask_wtf.csrf import CSRFProtect
 import re
 
 
@@ -23,7 +22,7 @@ app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE', 'railway')
 app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))  # ¡Asegúrate de convertir a entero!
 app.config['MYSQL_CONNECT_TIMEOUT'] = 10  # Previene timeouts
 mysql = MySQL(app)
-csrf = CSRFProtect(app)
+
 
 # -------------------- RUTAS GENERALES --------------------
 
