@@ -80,10 +80,9 @@
       </nav>
       <div class="sidebar-footer">
         <div class="university-brand">
-          <img src="/static/img/university-logo.svg" alt="Logo Universidad" class="logo">
           <span>Sistema de Citas</span>
         </div>
-        <div class="version">v2.1.0</div>
+        
       </div>
     </aside>
 
@@ -96,10 +95,35 @@
           <input type="text" placeholder="Buscar citas, profesores...">
         </div>
         <div class="user-actions">
-          <button class="notification-btn" aria-label="Notificaciones">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge">3</span>
-          </button>
+          
+    </style>
+</head>
+<body>
+    <!-- Simulación de página principal -->
+    <div class="main-content">
+        <h1>Mi Aplicación</h1>
+        <p>Contenido principal de la aplicación...</p>
+        <button id="simulateAppointment">Simular Nueva Cita (Para prueba)</button>
+    </div>
+    
+    <!-- Botón de notificaciones -->
+    <button class="notification-btn" id="notificationBtn">
+        🔔
+        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+    </button>
+    
+    <!-- Panel de notificaciones -->
+    <div class="notifications-panel" id="notificationsPanel">
+        <div class="notifications-header">
+            <h2 class="notifications-title">Notificaciones</h2>
+            <button class="close-btn" id="closeNotifications">×</button>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <!-- Las notificaciones se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    
           <div class="quick-actions">
             <button class="action-btn" aria-label="Nueva cita rápida">
               <i class="fas fa-plus"></i>
