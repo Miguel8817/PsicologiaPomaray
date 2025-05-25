@@ -10,18 +10,12 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libssl-dev \
     curl \
+    default-libmysqlclient-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Copia el archivo de requerimientos e instala las dependencias
 COPY requirements.txt .
-
-RUN apt-get update && apt-get install -y \
-    default-libmysqlclient-dev \
-    build-essential \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
-    
-
 
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -34,5 +28,5 @@ EXPOSE 14068
 # Establece la variable de entorno para producción si la usas
 ENV FLASK_ENV=production
 
-# Comando por defecto para correr la app (ajusta si usas otro archivo o framework)
-CMD ["python", "app.py"]
+# Comando por defecto para correr la app usando waitress en el puerto 14068
+CMD ["waitress-serve", "--host=0.0.0.0", "--port=14068", "app:app"]

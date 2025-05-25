@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import MySQLdb.cursors
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 
 app = Flask(__name__)
