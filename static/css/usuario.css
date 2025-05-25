@@ -1,351 +1,270 @@
-/* Variables de color */
 :root {
-    --primary: #2e7d32;
-    /* Verde principal */
-    --primary-dark: #1b5e20;
-    /* Verde oscuro */
-    --secondary: #66bb6a;
-    /* Verde secundario */
-    --light: #f8f9fa;
-    --dark: #212529;
-    --gray: #6c757d;
-    --light-gray: #e9ecef;
-    --success: #81c784;
-    /* Verde claro éxito */
-    --warning: #c0ca33;
-    /* Verde amarillento para advertencia */
-    --danger: #a5d6a7;
-    /* Verde suave para "peligro" */
+  --primary: #2e7d32;
+  --primary-dark: #1b5e20;
+  --secondary: #66bb6a;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --light-gray: #e9ecef;
+  --white: #ffffff;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
 }
 
-
-a {
-    text-decoration: none;
-    color: black;
-}
-
-/* Reset y estilos base */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #f5f7fa;
-    color: var(--dark);
-    line-height: 1.6;
+  background-color: #f5f7fa;
+  color: var(--dark);
+  line-height: 1.6;
 }
 
-/* Contenedor principal */
 .dashboard-container {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    min-height: 100vh;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
 }
 
-/* Sidebar */
+/* Sidebar Styles */
 .sidebar {
-    background-color: var(--primary);
-    color: white;
-    padding: 1.5rem 0;
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 1.5rem 0;
+  position: relative;
+  z-index: 100;
 }
 
 .sidebar-header {
-    padding: 0 1.5rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 1.5rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sidebar-header h2 {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.close-sidebar {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.25rem;
+  cursor: pointer;
 }
 
 .sidebar-nav {
-    margin-top: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .sidebar-nav ul {
-    list-style: none;
+  list-style: none;
 }
 
 .sidebar-nav li {
-    margin-bottom: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .sidebar-nav a {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    color: white;
-    text-decoration: none;
-    transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .sidebar-nav a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-nav .active a {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-left: 3px solid white;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-left: 3px solid var(--white);
 }
 
 .sidebar-nav .logout {
-    margin-top: 2rem;
+  margin-top: 2rem;
 }
 
 .sidebar-nav .logout a {
-    color: #b9f6ca;
-    /* Verde menta claro */
+  color: #b9f6ca;
 }
 
-/* Contenido principal */
+/* Main Content Styles */
 .main-content {
-    padding: 2rem;
+  padding: 2rem;
+  background-color: var(--light);
 }
 
-/* Encabezado de usuario */
 .user-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .user-info h1 {
-    font-size: 1.75rem;
-    margin-bottom: 0.25rem;
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
 }
 
 .user-role {
-    display: inline-block;
-    background-color: var(--primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: bold;
+  display: inline-block;
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
 }
 
 .user-avatar {
-    font-size: 2.5rem;
-    color: var(--gray);
+  font-size: 2.5rem;
+  color: var(--gray);
 }
 
-/* Barra de búsqueda */
-.search-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    gap: 1rem;
+/* Dashboard Cards */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.search-bar {
-    flex: 1;
-    display: flex;
-    max-width: 500px;
+.card {
+  background-color: var(--white);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.search-bar input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--light-gray);
-    border-radius: 8px 0 0 8px;
-    font-size: 1rem;
-    outline: none;
+.card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--white);
 }
 
-.search-bar input:focus {
-    border-color: var(--primary);
+.card-icon.bg-primary {
+  background-color: var(--primary);
 }
 
-.search-btn {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    padding: 0 1.25rem;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.card-icon.bg-success {
+  background-color: var(--success);
 }
 
-.search-btn:hover {
-    background-color: var(--primary-dark);
+.card-content h3 {
+  color: var(--gray);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 
-.new-appointment-btn {
-    background-color: var(--secondary);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background-color 0.3s;
+.card-content p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--dark);
 }
 
-.new-appointment-btn:hover {
-    background-color: #4caf50;
-    /* verde más oscuro */
+/* Recent Appointments */
+.recent-appointments {
+  background-color: var(--white);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Actividad reciente */
-.recent-activity {
-    background-color: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+.recent-appointments h2 {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--dark);
 }
 
-.recent-activity h3 {
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--dark);
+.appointments-list {
+  display: grid;
+  gap: 1rem;
 }
 
-.activity-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
+.appointment-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--light);
+  transition: transform 0.3s;
 }
 
-.activity-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-    background-color: var(--light);
-    transition: transform 0.3s;
+.appointment-card:hover {
+  transform: translateY(-3px);
 }
 
-.activity-card:hover {
-    transform: translateY(-3px);
+.appointment-info h4 {
+  margin-bottom: 0.5rem;
+  color: var(--dark);
 }
 
-.activity-icon {
-    font-size: 1.5rem;
-    color: var(--primary);
+.appointment-info p {
+  color: var(--gray);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.activity-details h4 {
-    margin-bottom: 0.25rem;
-    color: var(--dark);
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
 }
 
-.activity-details p {
-    color: var(--gray);
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
+.status-badge.confirmed {
+  background-color: #e8f5e9;
+  color: var(--success);
 }
 
-.status {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
+.status-badge.cancelled {
+  background-color: #ffebee;
+  color: var(--danger);
 }
 
-.status.confirmed {
-    background-color: #d0f0c0;
-    color: #1b5e20;
-}
-
-.status.cancelled {
-    background-color: #e6f5e9;
-    color: #2e7d32;
-}
-
-/* Estadísticas rápidas */
-.quick-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.stat-card {
-    background-color: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.stat-icon {
-    font-size: 1.5rem;
-    color: var(--primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: rgba(46, 125, 50, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-info h4 {
-    color: var(--gray);
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-}
-
-.stat-info p {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--dark);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .dashboard-container {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        display: none;
-    }
-
-    .search-actions {
-        flex-direction: column;
-    }
-
-    .search-bar {
-        width: 100%;
-        max-width: none;
-    }
-}
-
+/* Mobile Menu Button (hidden by default) */
 .mobile-menu-btn {
-    display: block;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1100;
-    background: rgb(251, 248, 248);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgb(7, 5, 5);
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  background: var(--white);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  align-items: center;
 }

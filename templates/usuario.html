@@ -4,35 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Usuario</title>
-  <link rel="stylesheet" href="/static/css/usuario.css"?\>
-  <link rel="stylesheet" href="file:///C:/Users/Usuario/Desktop/Trabajo%20final%20juan%20-%20copia/static/css/usuario.css">
+  <link rel="stylesheet" href="/static/css/usuario.css">
+  <link rel="stylesheet" href="/static/css/mobile.css" media="(max-width: 768px)">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="dashboard-container">
-    <button class="mobile-menu-btn">
+    <!-- Botón de menú móvil -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
       <i class="fas fa-bars"></i>
     </button>
     
     <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <h2><i class="fas fa-user-cog"></i> Panel de Usuario</h2>
+        <button class="close-sidebar" id="closeSidebar">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
       <nav class="sidebar-nav">
         <ul>
           <li class="active">
-            <a href="/Psicologo_cita"><i class="fas fa-calendar-plus"></i> Agendar Cita</a></li>
-            
-          <li>
-            <a href="/GestionProfesor"><i class="fas fa-user-edit"></i> Gestion citas de profesor</a> 
+            <a href="/Psicologo_cita"><i class="fas fa-calendar-plus"></i> Agendar Cita</a>
           </li>
-          
           <li>
-            <a href="/GestionCita"><i class="fas fa-calendar-check"></i>Gestión de citas de psicologo</a>
+            <a href="/GestionProfesor"><i class="fas fa-user-edit"></i> Citas de Profesor</a> 
+          </li>
+          <li>
+            <a href="/GestionCita"><i class="fas fa-calendar-check"></i> Citas de Psicólogo</a>
           </li>
           <li class="logout">
-            <a href="/"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
           </li>
         </ul>
       </nav>
@@ -40,14 +43,10 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      
       <!-- User Header -->
       <header class="user-header">
         <div class="user-info">
-          {% for user in users %}
-          <h1>{{ user.0 }} {{ user.1 }} {{ user.2 }} </h1>  <!-- name y apellido -->
-          {% endfor %}
-
+          <h1>{{ session.name }} {% if session.lastName %}{{ session.lastName }}{% endif %}</h1>
           <span class="user-role">Estudiante</span>
         </div>
         <div class="user-avatar">
@@ -55,76 +54,56 @@
         </div>
       </header>
       
-
-      <!-- Search and Actions -->
-      <form action="/Psicologo_cita">
-      <section class="search-actions">
-        <div class="search-bar">
-          <input type="text" placeholder="Buscar citas, usuarios..." aria-label="Buscar">
-          <button class="search-btn"><i class="fas fa-search"></i></button>
-        </div>
-        <a href="/Psicologo_cita" class="new-appointment-btn">
-          <i class="fas fa-plus"></i> Nueva Cita
-        </a>
-      </section>
-
-      <!-- Recent Activity -->
-      <section class="recent-activity">
-        <h3><i class="fas fa-clock"></i> Actividad Reciente</h3>
-        <div class="activity-cards">
-          <div class="activity-card">
-            <div class="activity-icon">
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="activity-details">
-              <h4>Cita con Psicólogo</h4>
-              
-
-              <span class="status confirmed">Confirmada</span>
-            </div>
-          </div>
-          
-          <div class="activity-card">
-            <div class="activity-icon">
-              <i class="fas fa-calendar-times"></i>
-            </div>
-            <div class="activity-details">
-              <h4>Cita con Profesor</h4>
-              <p>Fecha de la cita: </p>
-              <p>Hora de la cita: </p>
-              <span class="status cancelled">Cancelada</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Quick Stats -->
-      <section class="quick-stats">
-        <div class="stat-card">
-          <div class="stat-icon">
+      <!-- Dashboard Cards -->
+      <div class="dashboard-cards">
+        <div class="card">
+          <div class="card-icon bg-primary">
             <i class="fas fa-calendar-alt"></i>
           </div>
-          <div class="stat-info">
-            <h4>Citas Programadas</h4>
-            <p></p>
+          <div class="card-content">
+            <h3>Citas Programadas</h3>
+            <p>5</p>
           </div>
         </div>
         
-        <div class="stat-card">
-          <div class="stat-icon">
+        <div class="card">
+          <div class="card-icon bg-success">
             <i class="fas fa-check-circle"></i>
           </div>
-          <div class="stat-info">
-            <h4>Citas Completadas</h4>
-            <p></p>
+          <div class="card-content">
+            <h3>Citas Completadas</h3>
+            <p>12</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Appointments -->
+      <section class="recent-appointments">
+        <h2><i class="fas fa-history"></i> Citas Recientes</h2>
+        <div class="appointments-list">
+          <div class="appointment-card">
+            <div class="appointment-info">
+              <h4>Cita con Psicólogo</h4>
+              <p><i class="fas fa-calendar-day"></i> 15 Junio 2023</p>
+              <p><i class="fas fa-clock"></i> 10:00 AM</p>
+            </div>
+            <span class="status-badge confirmed">Confirmada</span>
+          </div>
+          
+          <div class="appointment-card">
+            <div class="appointment-info">
+              <h4>Cita con Profesor</h4>
+              <p><i class="fas fa-calendar-day"></i> 10 Junio 2023</p>
+              <p><i class="fas fa-clock"></i> 2:00 PM</p>
+            </div>
+            <span class="status-badge cancelled">Cancelada</span>
           </div>
         </div>
       </section>
-      </form>
     </main>
   </div>
-  <script src="/static/js/usuario.js"></script>
-    
-  
+
+  <script src="/static/js/mobile-menu.js"></script>
+  <script src="/static/js/main.js"></script>
 </body>
 </html>
