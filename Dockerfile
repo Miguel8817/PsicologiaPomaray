@@ -1,18 +1,30 @@
-# Usa una imagen base oficial de Python
+# Usa una imagen oficial de Python ligera
 FROM python:3.11-slim
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia el archivo de requerimientos y luego instala las dependencias
-COPY requirements.txt requirements.txt
+# Instala paquetes necesarios para que pip funcione correctamente
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copia el archivo de requerimientos e instala las dependencias
+COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia el resto del código al contenedor
+# Copia el resto del código del proyecto al contenedor
 COPY . .
 
-# Expone el puerto 5000 (Flask usa 5000 por defecto)
+# Expone el puerto (modifica si usas otro)
 EXPOSE 5000
 
-# Ejecuta la app con la variable de entorno PORT o 5000 si no está definida
-CMD ["sh", "-c", "flask run --host=0.0.0.0 --port=${PORT:-5000}"]
+# Establece la variable de entorno para producción si la usas
+ENV FLASK_ENV=production
+
+# Comando por defecto para correr la app (ajusta si usas otro archivo o framework)
+CMD ["python", "app.py"]
