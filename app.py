@@ -12,12 +12,13 @@ app.config["ENV"] = os.getenv("FLASK_ENV", "production")
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
 # Reemplaza tu configuración actual con esta:
-app.config['MYSQL_HOST'] = os.getenv('gondola.proxy.rlwy.net')
-app.config['MYSQL_USER'] = os.getenv('root')
-app.config['MYSQL_PASSWORD'] = os.getenv('FXdwHwarfhTstLawaFdkVodXPzxBHXLG')
-app.config['MYSQL_DB'] = os.getenv('rialway')
-app.config['MYSQL_PORT'] = int(os.getenv('45362'))  # Puerto estándar MySQL es 3306
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+# En la sección de configuración MySQL (reemplaza tu configuración actual)
+app.config['MYSQL_HOST'] = os.getenv('MYSQLHOST', 'gondola.proxy.rlwy.net')
+app.config['MYSQL_USER'] = os.getenv('MYSQLUSER', 'root')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQLPASSWORD', 'FXdwHwarfhTstLawaFdkVodXPzxBHXLG')
+app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE', 'railway')
+app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))  # ¡Asegúrate de convertir a entero!
+app.config['MYSQL_CONNECT_TIMEOUT'] = 10  # Previene timeouts
 mysql = MySQL(app)
 
 # -------------------- RUTAS GENERALES --------------------
