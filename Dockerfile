@@ -2,12 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+
+
 # 1. Instala dependencias del sistema PRIMERO (¡crítico para mysqlclient!)
 RUN apt-get update && apt-get install -y \
-    python3-dev \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
     default-libmysqlclient-dev \
-    gcc \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
+
 
 # 2. Copia SOLO requirements.txt inicialmente
 COPY requirements.txt .
