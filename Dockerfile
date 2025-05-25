@@ -18,7 +18,7 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-EXPOSE 14068
+EXPOSE 45362
 
 ENV FLASK_ENV=production
 
