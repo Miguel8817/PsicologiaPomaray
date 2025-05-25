@@ -206,12 +206,17 @@ def CRUD():
 
 @app.route('/GUARDAR', methods=['POST'])
 def guardar():
-    # 1. Obtener y validar datos del formulario
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('admin'))
+
+    # Obtener datos con valores por defecto
     email = request.form.get('email', '').strip().lower()
     name = request.form.get('name', '').strip()
     password = request.form.get('password', '')
+    lastName = request.form.get('lastName', '').strip()  # Añadido para consistencia
 
-    # 2. Validaciones básicas
+    # Validaciones mejoradas
     if not all([email, name, password]):
         flash('Todos los campos son obligatorios', 'error')
         return redirect(url_for('CRUD'))
@@ -220,36 +225,40 @@ def guardar():
         flash('La contraseña debe tener al menos 8 caracteres', 'error')
         return redirect(url_for('CRUD'))
 
-    # 3. Validar formato de email
     if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
         flash('Por favor ingresa un email válido', 'error')
         return redirect(url_for('CRUD'))
 
-    # 4. Verificar si el email ya existe
-    cur = mysql.connection.cursor()
     try:
-        cur.execute("SELECT id FROM user WHERE email = %s", (email,))
-        if cur.fetchone():
-            flash('Este email ya está registrado', 'error')
-            return redirect(url_for('CRUD'))
+        with mysql.connection.cursor() as cur:
+            # Verificar si el email existe
+            cur.execute("SELECT id FROM user WHERE email = %s", (email,))
+            if cur.fetchone():
+                flash('Este email ya está registrado', 'error')
+                return redirect(url_for('CRUD'))
 
-        # 5. Hash de la contraseña
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+            # Hash de contraseña
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        # 6. Insertar nuevo usuario
-        cur.execute(
-            "INSERT INTO user (email, name, password) VALUES (%s, %s, %s)",
-            (email, name, hashed_password)
-        )
-        mysql.connection.commit()
-        flash('Usuario registrado exitosamente', 'success')
-        
+            # Insertar con todos los campos necesarios
+            cur.execute(
+                "INSERT INTO user (email, name, lastName, password) VALUES (%s, %s, %s, %s)",
+                (email, name, lastName, hashed_password)
+            )
+            mysql.connection.commit()
+            
+            flash('Usuario creado exitosamente', 'success')
+            app.logger.info(f'Nuevo usuario creado: {email}')
+            
+    except MySQLdb.Error as e:
+        mysql.connection.rollback()
+        error_msg = f'Error de base de datos: {e.args[1]}' if e.args else 'Error desconocido'
+        flash(f'Error al guardar usuario: {error_msg}', 'error')
+        app.logger.error(f'Error MySQL al guardar usuario: {str(e)}')
     except Exception as e:
         mysql.connection.rollback()
-        app.logger.error(f'Error al registrar usuario: {str(e)}')
-        flash('Ocurrió un error al registrar el usuario. Por favor intente nuevamente.', 'error')
-    finally:
-        cur.close()
+        flash('Error interno del servidor', 'error')
+        app.logger.error(f'Error inesperado: {str(e)}')
 
     return redirect(url_for('CRUD'))
 
