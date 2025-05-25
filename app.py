@@ -5,6 +5,9 @@ import MySQLdb.cursors
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from flask_wtf.csrf import CSRFProtect
+import re
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -20,6 +23,7 @@ app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE', 'railway')
 app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))  # ¡Asegúrate de convertir a entero!
 app.config['MYSQL_CONNECT_TIMEOUT'] = 10  # Previene timeouts
 mysql = MySQL(app)
+csrf = CSRFProtect(app)
 
 # -------------------- RUTAS GENERALES --------------------
 
@@ -187,14 +191,19 @@ def usuario():
 
 @app.route('/CRUD')
 def CRUD():
-    if 'email' not in session:
+    if 'email' not in session or not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
         return redirect(url_for('logout'))
 
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM user")
-    users = cur.fetchall()
-    cur.close()
-    return render_template('CRUD.html', users=users)
+    try:
+        with mysql.connection.cursor() as cur:
+            cur.execute("SELECT id, name, email FROM user")
+            users = cur.fetchall()
+        return render_template('CRUD.html', users=users)
+    except Exception as e:
+        app.logger.error(f"Error en CRUD: {str(e)}")
+        flash('Error al cargar usuarios', 'error')
+        return redirect(url_for('admin'))
 
 @app.route('/GUARDAR', methods=['POST'])
 def guardar():
@@ -231,23 +240,43 @@ def delete(id):
 
 @app.route('/editar/<string:id>', methods=['POST'])
 def editar(id):
-    name = request.form['name']
-    email = request.form['email']
-    password = request.form['password']
-    hashed_password = generate_password_hash(password)
+    if 'email' not in session or not session.get('is_admin'):
+        return jsonify({'success': False, 'message': 'No autorizado'}), 403
 
-    cur = mysql.connection.cursor()
     try:
-        cur.execute('UPDATE user SET name = %s, email = %s, password = %s WHERE id = %s', 
-                   (name, email, hashed_password, id))
-        mysql.connection.commit()
-        flash('Usuario actualizado', 'success')
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form.get('password', '')
+
+        # Validaciones
+        if not name or not email:
+            return jsonify({'success': False, 'message': 'Nombre y email son obligatorios'})
+
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            return jsonify({'success': False, 'message': 'Email no válido'})
+
+        with mysql.connection.cursor() as cur:
+            # Verificar si el email ya existe en otro usuario
+            cur.execute("SELECT id FROM user WHERE email = %s AND id != %s", (email, id))
+            if cur.fetchone():
+                return jsonify({'success': False, 'message': 'El email ya está en uso'})
+
+            # Actualizar datos
+            if password:
+                hashed_password = generate_password_hash(password)
+                cur.execute('UPDATE user SET name = %s, email = %s, password = %s WHERE id = %s',
+                          (name, email, hashed_password, id))
+            else:
+                cur.execute('UPDATE user SET name = %s, email = %s WHERE id = %s',
+                          (name, email, id))
+            
+            mysql.connection.commit()
+            return jsonify({'success': True, 'message': 'Usuario actualizado'})
+
     except Exception as e:
         mysql.connection.rollback()
-        flash(f'Error: {e}', 'error')
-    finally:
-        cur.close()
-    return redirect(url_for('CRUD'))
+        app.logger.error(f"Error al editar usuario: {str(e)}")
+        return jsonify({'success': False, 'message': 'Error en el servidor'}), 500
 
 # -------------------- CITAS PSICÓLOGO --------------------
 
