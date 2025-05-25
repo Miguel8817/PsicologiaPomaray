@@ -11,11 +11,12 @@ app.config["ENV"] = os.getenv("FLASK_ENV", "production")
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
 # Configuración MySQL
-app.config['MYSQL_HOST'] = 'gondola.proxy.rlwy.net'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'BvStTwybTRaXZGUreUdqUPZKEwVWatPK'
-app.config['MYSQL_DB'] = 'railway'
-app.config['MYSQL_PORT'] = '14068'
+app.config['MYSQL_HOST'] = os.environ.get('MYSQLHOST')
+app.config['MYSQL_USER'] = os.environ.get('MYSQLUSER')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQLPASSWORD')
+app.config['MYSQL_DB'] = os.environ.get('MYSQLDATABASE')
+app.config['MYSQL_PORT'] = int(os.environ.get('MYSQLPORT', 3306))
+
 mysql = MySQL(app)
 
 # -------------------- RUTAS GENERALES --------------------
@@ -422,4 +423,4 @@ def editar_cita_profesor(id):
 # -------------------- INICIAR APLICACIÓN --------------------
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

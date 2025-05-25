@@ -1,29 +1,18 @@
-# Usar imagen oficial de Python
-FROM python:3.9-slim
+# Usa una imagen base oficial de Python
+FROM python:3.11-slim
 
-# Instalar dependencias del sistema
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    default-libmysqlclient-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Establecer directorio de trabajo
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar e instalar dependencias primero (para cache)
-COPY requirements.txt .
+# Copia el archivo de requerimientos y luego instala las dependencias
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el resto de la aplicación
+# Copia el resto del código al contenedor
 COPY . .
 
-# Variables de entorno críticas
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=production
-ENV PORT=8000
+# Expone el puerto 5000 (Flask usa 5000 por defecto)
+EXPOSE 5000
 
-# Exponer puerto
-EXPOSE $PORT
-
-# Comando de inicio optimizado
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "--timeout", "120", "--workers", "4", "app:app"]
+# Ejecuta la app con la variable de entorno PORT o 5000 si no está definida
+CMD ["sh", "-c", "flask run --host=0.0.0.0 --port=${PORT:-5000}"]
