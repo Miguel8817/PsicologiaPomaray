@@ -329,3 +329,23 @@ body {
         max-width: none;
     }
 }
+
+.mobile-menu-btn {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1100;
+    background: rgb(251, 248, 248);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(7, 5, 5);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
