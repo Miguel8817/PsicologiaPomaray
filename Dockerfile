@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expone el puerto (modifica si usas otro)
-EXPOSE 5000
+EXPOSE 14068
 
 # Establece la variable de entorno para producción si la usas
 ENV FLASK_ENV=production
