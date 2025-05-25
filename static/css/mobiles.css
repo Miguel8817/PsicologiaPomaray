@@ -11,6 +11,7 @@
         height: 100vh;
         transition: left 0.3s ease;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
     }
 
     .sidebar.active {
@@ -26,17 +27,84 @@
     }
 
     .main-content {
-        padding: 1rem;
+        padding: 0;
         padding-top: 70px;
     }
 
-    .user-header {
+    .top-bar {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .welcome-banner {
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        border-radius: 0;
+    }
+
+    .welcome-content {
+        margin-bottom: 1.5rem;
+    }
+
+    .welcome-illustration img {
+        height: 120px;
+    }
+
+    .section-header {
+        padding: 0 1rem;
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .view-options {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+
+    .appointments-list,
+    .activity-timeline {
+        padding: 0 1rem;
+    }
+
+    .appointment-card {
+        flex-direction: column;
         gap: 1rem;
     }
 
-    .dashboard-cards {
-        grid-template-columns: 1fr;
+    .appointment-time {
+        flex-direction: row;
+        gap: 0.5rem;
+        align-self: flex-start;
+    }
+
+    .appointment-time .time {
+        font-size: 1.25rem;
+    }
+
+    .appointment-actions {
+        flex-direction: column;
+    }
+
+    .appointment-actions .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .floating-action-btn {
+        display: flex;
     }
 }
