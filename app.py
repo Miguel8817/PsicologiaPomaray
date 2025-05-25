@@ -11,13 +11,13 @@ app.secret_key = os.urandom(24)
 app.config["ENV"] = os.getenv("FLASK_ENV", "production")  
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
-# Configuración MySQL
-app.config['MYSQL_HOST'] = os.environ.get('MYSQLHOST')
-app.config['MYSQL_USER'] = os.environ.get('MYSQLUSER')
-app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQLPASSWORD')
-app.config['MYSQL_DB'] = os.environ.get('MYSQLDATABASE')
-app.config['MYSQL_PORT'] = int(os.environ.get('MYSQLPORT', 45362))
-
+# Reemplaza tu configuración actual con esta:
+app.config['MYSQL_HOST'] = os.getenv('MYSQLHOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQLUSER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQLPASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE')
+app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 3306))  # Puerto estándar MySQL es 3306
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 # -------------------- RUTAS GENERALES --------------------
