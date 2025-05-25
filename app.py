@@ -367,7 +367,7 @@ def agendar_profesor():
             cur.close()
         return redirect(url_for('agendar_profesor'))
 
-    return render_template('agendar_Profesor.html')
+    return render_template('agendar_profesor.html')
 
 @app.route('/GestionProfesor')
 def gestion_citas_profesor():
