@@ -206,21 +206,51 @@ def CRUD():
 
 @app.route('/GUARDAR', methods=['POST'])
 def guardar():
-    email = request.form['email']
-    name = request.form['name']
-    password = request.form['password']
-    hashed_password = generate_password_hash(password)
+    # 1. Obtener y validar datos del formulario
+    email = request.form.get('email', '').strip().lower()
+    name = request.form.get('name', '').strip()
+    password = request.form.get('password', '')
 
+    # 2. Validaciones básicas
+    if not all([email, name, password]):
+        flash('Todos los campos son obligatorios', 'error')
+        return redirect(url_for('CRUD'))
+
+    if len(password) < 8:
+        flash('La contraseña debe tener al menos 8 caracteres', 'error')
+        return redirect(url_for('CRUD'))
+
+    # 3. Validar formato de email
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        flash('Por favor ingresa un email válido', 'error')
+        return redirect(url_for('CRUD'))
+
+    # 4. Verificar si el email ya existe
     cur = mysql.connection.cursor()
     try:
-        cur.execute("INSERT INTO user (email, name, password) VALUES (%s, %s, %s)", (email, name, hashed_password))
+        cur.execute("SELECT id FROM user WHERE email = %s", (email,))
+        if cur.fetchone():
+            flash('Este email ya está registrado', 'error')
+            return redirect(url_for('CRUD'))
+
+        # 5. Hash de la contraseña
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
+        # 6. Insertar nuevo usuario
+        cur.execute(
+            "INSERT INTO user (email, name, password) VALUES (%s, %s, %s)",
+            (email, name, hashed_password)
+        )
         mysql.connection.commit()
-        flash('Usuario agregado', 'success')
+        flash('Usuario registrado exitosamente', 'success')
+        
     except Exception as e:
         mysql.connection.rollback()
-        flash(f'Error: {e}', 'error')
+        app.logger.error(f'Error al registrar usuario: {str(e)}')
+        flash('Ocurrió un error al registrar el usuario. Por favor intente nuevamente.', 'error')
     finally:
         cur.close()
+
     return redirect(url_for('CRUD'))
 
 @app.route('/delete/<string:id>', methods=['POST'])
