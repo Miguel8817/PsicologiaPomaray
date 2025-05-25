@@ -5,58 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Departamento de Psicología - Politécnico</title>
     <link rel="stylesheet" href="/static/css/index.css">
-    <link rel="icon" href="/imagenes/logo.png">
+    <link rel="icon" href="imagenes/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
-        
-        <div class="container">
-            <div class="header-content">
-                
-                <div class="logo">
-                    
-                        <h1>Departamento de Psicología</h1>
-                    </div>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="/login" class="active"><i class="fas fa-home"></i> Inicio de seccion</a></li>
-                        <li><a href="/record"><i class="fas fa-user"></i>Registro</a></li>
-                    </ul>
-                </nav>
+        <div class="container header-container">
+            <div class="logo">
+                <h1>Departamento de Psicología</h1>
             </div>
-        
+            <nav>
+                <ul>
+                    <li><a href="/login" class="active"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a></li>
+                    <li><a href="/record"><i class="fas fa-user-plus"></i> Registro</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
     </header>
 
     <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h2>Bienvenidos al Departamento de Psicología</h2>
-                <p>Brindamos apoyo psicológico integral a la comunidad estudiantil y académica.</p>
-                
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h2>Bienvenidos al Departamento de Psicología</h2>
+            <p class="hero-text">Brindamos apoyo psicológico integral a la comunidad estudiantil y académica.</p>
+            <div class="hero-buttons">
+                <a href="/login" class="btn btn-primary">Iniciar Sesión</a>
+                <a href="/record" class="btn btn-secondary">Registrarse</a>
             </div>
         </div>
     </section>
 
-    <section class="features">
+    <section class="services">
         <div class="container">
-            <div class="section-title">
+            <div class="section-header">
                 <h2>Nuestros Servicios</h2>
+                <p>Ofrecemos apoyo profesional para tu bienestar emocional y académico</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <i class="fas fa-user-graduate icon"></i>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
                     <h3>Orientación Estudiantil</h3>
                     <p>Apoyo psicológico para manejo de estrés académico, técnicas de estudio y desarrollo personal.</p>
                 </div>
-                <div class="feature-card">
-                    <i class="fas fa-users icon"></i>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
                     <h3>Terapia Grupal</h3>
                     <p>Sesiones grupales para trabajar en habilidades sociales, manejo de emociones y relaciones interpersonales.</p>
                 </div>
-                <div class="feature-card">
-                    <i class="fas fa-chalkboard-teacher icon"></i>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
                     <h3>Talleres Educativos</h3>
                     <p>Programas de prevención y promoción de la salud mental para la comunidad politécnica.</p>
                 </div>
@@ -64,10 +70,24 @@
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Departamento de Psicología - Instituto Politécnico Nacional. Todos los derechos reservados.</p>
+    <section class="about">
+        <div class="container about-container">
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Psicología">
+            </div>
+            <div class="about-content">
+                <h2>Sobre Nosotros</h2>
+                <p>El Departamento de Psicología del Politécnico está comprometido con el bienestar emocional y mental de nuestra comunidad educativa.</p>
+                <p>Nuestro equipo de profesionales altamente calificados ofrece servicios psicológicos integrales adaptados a las necesidades de estudiantes y personal académico.</p>
+                <a href="#" class="btn btn-outline">Conoce más</a>
+            </div>
         </div>
+    </section>
+
+    <footer>
+        
     </footer>
+
+    <script src="static/js/index.js"></script>
 </body>
 </html>

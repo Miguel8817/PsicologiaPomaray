@@ -1,23 +1,43 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // --------------------------
-    // 1. FUNCIONALIDAD DE BÚSQUEDA
-    // --------------------------
-    const initSearch = () => {
-        const searchInput = document.getElementById('search-input');
-        if (!searchInput) return;
+    // === 1. Control del menú móvil ===
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const sidebar = document.querySelector('.admin-sidebar');
 
+    if (menuBtn && sidebar) {
+        menuBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            sidebar.classList.toggle('active');
+
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (window.innerWidth < 768 &&
+                !sidebar.contains(e.target) &&
+                e.target !== menuBtn &&
+                !menuBtn.contains(e.target)) {
+                sidebar.classList.remove('active');
+                const icon = menuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
+
+    // === 2. Funcionalidad de búsqueda en tablas ===
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
         searchInput.addEventListener('input', function (e) {
-            const searchTerm = e.target.value.trim().toLowerCase();
-            const tables = document.querySelectorAll('.searchable-table');
+            const searchTerm = e.target.value.toLowerCase();
+            const tables = document.querySelectorAll('table');
 
             tables.forEach(table => {
                 const rows = table.querySelectorAll('tbody tr');
                 let hasMatches = false;
-                const noResultsRow = table.querySelector('.no-results');
 
                 rows.forEach(row => {
-                    if (row.classList.contains('no-results')) return;
-
                     const text = row.textContent.toLowerCase();
                     if (text.includes(searchTerm)) {
                         row.style.display = '';
@@ -27,18 +47,107 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                // Mostrar mensaje si no hay coincidencias
-                if (noResultsRow) {
-                    noResultsRow.style.display = hasMatches || searchTerm === '' ? 'none' : 'table-row';
+                // Mostrar mensaje si no hay resultados
+                const noResults = table.querySelector('.no-results');
+                if (!noResults && !hasMatches && searchTerm) {
+                    const noResultsRow = document.createElement('tr');
+                    noResultsRow.className = 'no-results';
+                    noResultsRow.innerHTML = `<td colspan="10" style="text-align: center;">No se encontraron resultados</td>`;
+                    table.querySelector('tbody').appendChild(noResultsRow);
+                } else if (noResults) {
+                    noResults.style.display = hasMatches || !searchTerm ? 'none' : '';
                 }
             });
         });
-    };
+    }
 
-    // --------------------------
-    // 2. ACTUALIZACIÓN DE TIEMPOS
-    // --------------------------
-    const updateRelativeTimes = () => {
+    // === 3. Notificaciones ===
+    const notificationBell = document.querySelector('.notifications');
+    if (notificationBell) {
+        notificationBell.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const dropdown = this.querySelector('.notification-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+                const badge = this.querySelector('.notification-badge');
+                if (badge) badge.textContent = '0';
+            }
+        });
+
+        setInterval(() => {
+            const badge = notificationBell.querySelector('.notification-badge');
+            if (badge && Math.random() > 0.7) {
+                const current = parseInt(badge.textContent) || 0;
+                badge.textContent = current + 1;
+                badge.classList.add('pulse');
+                setTimeout(() => badge.classList.remove('pulse'), 1000);
+            }
+        }, 30000);
+    }
+
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.notification-dropdown.show').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+    });
+
+    // === 4. Chatbot de IA ===
+    const chatbotToggler = document.querySelector('.chatbot-toggler');
+    const chatbotContainer = document.querySelector('.chatbot-container');
+    const closeChatbot = document.querySelector('.close-chatbot');
+
+    if (chatbotToggler && chatbotContainer) {
+        chatbotToggler.addEventListener('click', function () {
+            chatbotContainer.classList.toggle('active');
+        });
+
+        if (closeChatbot) {
+            closeChatbot.addEventListener('click', function () {
+                chatbotContainer.classList.remove('active');
+            });
+        }
+
+        const chatInput = chatbotContainer.querySelector('input');
+        const chatSendBtn = chatbotContainer.querySelector('.chatbot-input button');
+        const chatMessages = chatbotContainer.querySelector('.chatbot-messages');
+
+        const addMessage = (text, isUser = false) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+
+        const handleUserMessage = () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                chatInput.value = '';
+
+                setTimeout(() => {
+                    const responses = [
+                        "Entiendo tu consulta sobre psicología. ¿Necesitas ayuda con citas, usuarios o reportes?",
+                        "Puedo ayudarte con la gestión del panel. ¿Qué necesitas saber?",
+                        "Para programar una cita, ve a la sección correspondiente en el menú.",
+                        "Los datos de usuarios se actualizan cada hora automáticamente.",
+                        "¿Necesitas generar algún reporte especial?"
+                    ];
+                    addMessage(responses[Math.floor(Math.random() * responses.length)]);
+                }, 1000);
+            }
+        };
+
+        chatSendBtn.addEventListener('click', handleUserMessage);
+        chatInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') handleUserMessage();
+        });
+
+        addMessage("¡Hola! Soy tu asistente de psicología. ¿En qué puedo ayudarte hoy?");
+    }
+
+    // === 5. Actualización de tiempos relativos ===
+    function updateRelativeTimes() {
         const timeElements = document.querySelectorAll('[data-time]');
         const now = new Date();
 
@@ -78,84 +187,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
             el.textContent = `hace unos segundos`;
         });
-    };
+    }
 
-    // --------------------------
-    // 3. NOTIFICACIONES EN TIEMPO REAL
-    // --------------------------
-    const initNotifications = () => {
-        const notificationBell = document.querySelector('.notifications');
-        if (!notificationBell) return;
+    updateRelativeTimes();
+    setInterval(updateRelativeTimes, 60000);
 
-        // Simular notificaciones (en producción sería con WebSockets)
-        setInterval(() => {
-            const badge = notificationBell.querySelector('.notification-badge');
-            if (badge) {
-                const currentCount = parseInt(badge.textContent) || 0;
-                if (Math.random() > 0.7 && currentCount < 9) {
-                    badge.textContent = currentCount + 1;
-                    badge.classList.add('pulse');
-                    setTimeout(() => badge.classList.remove('pulse'), 1000);
-                }
-            }
-        }, 30000); // Cada 30 segundos
+    // === 6. Ordenamiento de tablas ===
+    document.querySelectorAll('.sortable th').forEach(header => {
+        header.addEventListener('click', function () {
+            const table = this.closest('table');
+            const columnIndex = Array.from(this.parentElement.children).indexOf(this);
+            const isAscending = !this.classList.contains('asc');
 
-        // Mostrar/ocultar dropdown de notificaciones
-        notificationBell.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const dropdown = this.querySelector('.notification-dropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('show');
+            table.querySelectorAll('th').forEach(th => th.classList.remove('asc', 'desc'));
+            this.classList.add(isAscending ? 'asc' : 'desc');
 
-                // Marcar como leídas
-                const badge = this.querySelector('.notification-badge');
-                if (badge) badge.textContent = '0';
-            }
+            sortTable(table, columnIndex, isAscending);
         });
+    });
 
-        // Cerrar dropdown al hacer clic fuera
-        document.addEventListener('click', function () {
-            const dropdowns = document.querySelectorAll('.notification-dropdown');
-            dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
-        });
-    };
-
-    // --------------------------
-    // 4. INTERACCIONES CON TABLAS
-    // --------------------------
-    const initTableInteractions = () => {
-        // Ordenamiento de columnas
-        document.querySelectorAll('.sortable th').forEach(header => {
-            header.addEventListener('click', function () {
-                const table = this.closest('table');
-                const columnIndex = Array.from(this.parentElement.children).indexOf(this);
-                const isAscending = !this.classList.contains('asc');
-
-                // Resetear otros headers
-                table.querySelectorAll('th').forEach(th => {
-                    th.classList.remove('asc', 'desc');
-                });
-
-                // Aplicar clase al header actual
-                this.classList.add(isAscending ? 'asc' : 'desc');
-
-                // Ordenar la tabla
-                sortTable(table, columnIndex, isAscending);
-            });
-        });
-
-        // Paginación
-        document.querySelectorAll('.pagination a').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                // Implementar lógica de paginación aquí
-                console.log('Cambiar a página:', this.textContent);
-            });
-        });
-    };
-
-    // Función auxiliar para ordenar tablas
-    const sortTable = (table, columnIndex, ascending) => {
+    function sortTable(table, columnIndex, ascending) {
         const tbody = table.querySelector('tbody');
         const rows = Array.from(tbody.querySelectorAll('tr:not(.no-results)'));
 
@@ -163,66 +214,55 @@ document.addEventListener('DOMContentLoaded', function () {
             const aText = a.children[columnIndex].textContent.trim();
             const bText = b.children[columnIndex].textContent.trim();
 
-            // Intenta comparar como números si es posible
             if (!isNaN(aText) && !isNaN(bText)) {
-                return ascending ?
-                    parseFloat(aText) - parseFloat(bText) :
-                    parseFloat(bText) - parseFloat(aText);
+                return ascending ? parseFloat(aText) - parseFloat(bText) : parseFloat(bText) - parseFloat(aText);
             }
 
-            // Comparación de texto
-            return ascending ?
-                aText.localeCompare(bText) :
-                bText.localeCompare(aText);
+            return ascending ? aText.localeCompare(bText) : bText.localeCompare(aText);
         });
 
-        // Reinsertar filas ordenadas
         rows.forEach(row => tbody.appendChild(row));
-    };
+    }
 
-    // --------------------------
-    // 5. INICIALIZACIÓN DE COMPONENTES
-    // --------------------------
-    const initComponents = () => {
-        // Tooltips
-        tippy('[data-tippy-content]', {
-            arrow: true,
-            animation: 'fade'
+    // === 7. Adaptación de sidebar y sideMenu ===
+    const sideMenu = document.querySelector('.side-menu');
+    const menuToggle = document.querySelector('.menu-toggle');
+
+    if (menuToggle && sideMenu) {
+        menuToggle.addEventListener('click', function () {
+            sideMenu.classList.toggle('expanded');
         });
 
-        // Modales
-        document.querySelectorAll('[data-modal]').forEach(trigger => {
-            trigger.addEventListener('click', function () {
-                const modalId = this.getAttribute('data-modal');
-                const modal = document.getElementById(modalId);
-                if (modal) modal.classList.add('show');
-            });
+        document.addEventListener('click', function (e) {
+            if (!sideMenu.contains(e.target) && e.target !== menuToggle && !menuToggle.contains(e.target)) {
+                sideMenu.classList.remove('expanded');
+            }
         });
+    }
 
-        // Cerrar modales
-        document.querySelectorAll('.modal .close').forEach(closeBtn => {
-            closeBtn.addEventListener('click', function () {
-                this.closest('.modal').classList.remove('show');
-            });
-        });
+    // Redimensionamiento unificado
+    function handleUnifiedResize() {
+        if (window.innerWidth >= 768) {
+            if (sidebar) sidebar.classList.add('active');
+            if (sideMenu) sideMenu.classList.add('expanded');
+            if (menuBtn) menuBtn.style.display = 'none';
+        } else {
+            if (sidebar) sidebar.classList.remove('active');
+            if (sideMenu) sideMenu.classList.remove('expanded');
+            if (menuBtn) menuBtn.style.display = 'flex';
+        }
 
-        // Cerrar modales al hacer clic fuera
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function (e) {
-                if (e.target === this) this.classList.remove('show');
-            });
-        });
-    };
+        if (menuBtn) {
+            const icon = menuBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+    }
 
-    // --------------------------
-    // INICIALIZAR TODAS LAS FUNCIONALIDADES
-    // --------------------------
-    initSearch();
-    updateRelativeTimes();
-    initNotifications();
-    initTableInteractions();
-    initComponents();
-
-    // Actualizar tiempos cada minuto
-    setInterval(updateRelativeTimes, 60000);
+    window.addEventListener('resize', handleUnifiedResize);
+    handleUnifiedResize(); // Ejecutar al cargar
 });
+
+

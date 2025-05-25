@@ -2,16 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Panel de Administración - Psicología</title>
-    <link rel="stylesheet" href="/static/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/admin.css">
 </head>
 <body>
+    <!-- Botón de menú móvil -->
+    <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+    
     <div class="admin-container">
         <aside class="admin-sidebar">
             <div class="sidebar-header">
+                <i class="fas fa-brain"></i>
                 <span>Psicología</span>
             </div>
             <nav class="sidebar-nav">
@@ -58,6 +64,8 @@
                 </div>
                 <div class="user-profile">
                     <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
                     </div>
                     <div class="user-info">
                         <div class="avatar">{{ session.get('name', 'A')[0] }}{{ session.get('lastName', 'admin')[0] }}</div>
@@ -119,17 +127,15 @@
                 <div class="content-section">
                     <div class="section-header">
                         <h2>Usuarios Recientes</h2>
-                        <a href="/CRUD" class="btn-view-all">Ver todos</a>
+                        <a href="/CRUD" class="btn-view-all">Ver todos <i class="fas fa-chevron-right"></i></a>
                     </div>
-
-                    <div class="recent-users">
+                    <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Email</th>
                                     <th>Fecha Registro</th>
-                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -138,10 +144,10 @@
                                     <td>{{ user.1 }} {{ user.2 }}</td>
                                     <td>{{ user.3 }}</td>
                                     <td>{{ user.4 }}</td>
-                                    <td>
-                                    </td>
                                 </tr>
                                 {% endfor %}
+                                
+                                
                             </tbody>
                         </table>
                     </div>
@@ -151,17 +157,32 @@
                     <div class="section-header">
                         <h2>Actividad Reciente</h2>
                     </div>
-
-                    
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>Nuevo usuario registrado: Ana Martínez</p>
+                                <span class="activity-time">Hoy, 10:30 AM</span>
+                            </div>
                         </div>
-
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p>Nueva cita programada con Dr. Rodríguez</p>
+                                <span class="activity-time">Ayer, 4:15 PM</span>
+                            </div>
+                        </div>
                         <div class="activity-item">
                             <div class="activity-icon">
                                 <i class="fas fa-shield-alt"></i>
                             </div>
                             <div class="activity-details">
                                 <p>Sistema actualizado a versión 1.2.0</p>
-                                <span class="activity-time">Ayer, 15:30</span>
+                                <span class="activity-time" id="last-updated">Última actualización: cargando...</span>
                             </div>
                         </div>
                     </div>
@@ -169,6 +190,46 @@
             </div>
         </main>
     </div>
-    <script src="/static/js/admin.js"></script>
+
+    <!-- Chatbot de IA Flotante -->
+    <div class="ai-chatbot">
+        <button class="chatbot-toggler">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="chatbot-container">
+            <div class="chatbot-header">
+                <h3>Asistente de Psicología</h3>
+                <button class="close-chatbot"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-messages"></div>
+            <div class="chatbot-input">
+                <input type="text" placeholder="Escribe tu pregunta...">
+                <button><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+    
+
+<script>
+function getLastModified() {
+    fetch(window.location.href, { cache: "no-store" })
+        .then(response => {
+            const lastModified = response.headers.get("Last-Modified");
+            if (lastModified) {
+                const fecha = new Date(lastModified);
+                document.getElementById("last-updated").textContent =
+                    "Última actualización: " + fecha.toLocaleString();
+            } else {
+                document.getElementById("last-updated").textContent =
+                    "No se pudo obtener la fecha de actualización.";
+            }
+        });
+}
+
+getLastModified();
+</script>
+
+
+    <script src="static/js/admin.js"></script>
 </body>
 </html>
