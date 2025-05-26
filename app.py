@@ -44,7 +44,7 @@ def logout():
     flash('Sesión cerrada correctamente', 'success')
     return redirect(url_for('iniciar_sesion'))
 
-#Registro
+# -------------------- Registro --------------------
 @app.route('/record', methods=['GET', 'POST'])
 def record():
     if request.method == 'POST':
@@ -87,7 +87,7 @@ def record():
             cur.close()
     return render_template('registro.html')
 
-# Iniciar sesión
+# -------------------- Iniciar sesion --------------------
 @app.route('/login', methods=['GET', 'POST'])
 def iniciar_sesion():
     if request.method == 'POST':
@@ -154,10 +154,6 @@ def admin():
     if not session.get('is_admin') or not session.get('logged_in'):
         flash('Debes iniciar sesión como administrador para acceder a esta página', 'error')
         return redirect(url_for('iniciar_sesion'))
-    
-
-
-        # Resto del código...
 
     try:
         with mysql.connection.cursor() as cursor:
@@ -189,8 +185,8 @@ def admin():
     
     
     
-@app.route('/GestionAdmin.html')
-def gestion_citas():
+@app.route('/GestionAdmin')
+def gestion_admin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_psicologo")
     psicologo = cur.fetchall()
@@ -198,7 +194,7 @@ def gestion_citas():
     return render_template('GestionAdmin.html', psicologo=psicologo)
 
 
-@app.route('/cita/<int:id_cita>/estado', methods=['POST'])
+@app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
 def actualizar_estado_cita(id_cita):
     nuevo_estado = request.form.get('estado')
 
@@ -223,7 +219,114 @@ def actualizar_estado_cita(id_cita):
     finally:
         cursor.close()
 
-    return redirect(url_for('GestionAdmin'))
+    return redirect(url_for('gestion_admin'))
+
+
+@app.route('/guardar_Admin', methods=['POST'])
+def guardar_cita():
+    FechaPS = request.form['FechaPS']
+    HoraPS = request.form['HoraPS']
+    try:
+        datetime.strptime(FechaPS, '%Y-%m-%d')
+        datetime.strptime(HoraPS, '%H:%M')
+        cursor = mysql.connection.cursor()
+        cursor.execute("INSERT INTO cita_psicologo (FechaPS, HoraPS) VALUES (%s, %s)", (FechaPS, HoraPS))
+        mysql.connection.commit()
+        flash('Cita guardada', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Error: {e}', 'error')
+    return redirect(url_for('gestion_admin'))
+
+@app.route('/delete_admin/<int:id>', methods=['POST'])
+def delete_admin(id):
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute("DELETE FROM cita_psicologo WHERE id = %s", (id,))
+        mysql.connection.commit()
+        flash('Cita eliminada', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Error: {e}', 'error')
+    finally:
+        cursor.close()
+    return redirect(url_for('gestion_admin'))
+
+#Editar cita psicólogo
+@app.route('/editar_admin/<int:id>', methods=['POST'])
+def editar_cita(id):
+    fecha = request.form['FechaPS']
+    hora = request.form['HoraPS']
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("UPDATE cita_psicologo SET FechaPS = %s, HoraPS = %s WHERE id = %s", (fecha, hora, id))
+        mysql.connection.commit()
+        flash('Cita editada', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Error: {e}', 'error')
+    return redirect(url_for('gestion_admin'))
+
+
+# -------------------- Admin profesor --------------------
+
+@app.route('/Gestion_profesor_admin')
+def gestion_profesor_admin():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM cita_profesor")
+    profesor = cur.fetchall()
+    cur.close()
+    return render_template('Gestion_admin_profesor.html', profesor=profesor)
+
+@app.route('/Guardar_profesor_admin', methods=['POST'])
+def guardar_profesor_admin():
+    FechaPR = request.form['FechaPR']
+    HoraPR = request.form['HoraPR']
+    try:
+        datetime.strptime(FechaPR, '%Y-%m-%d')
+        datetime.strptime(HoraPR, '%H:%M')
+        cursor = mysql.connection.cursor()
+        cursor.execute("INSERT INTO cita_profesor (FechaPR, HoraPR) VALUES (%s, %s)", (FechaPR, HoraPR))
+        mysql.connection.commit()
+        flash('Cita guardada', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Error: {e}', 'error')
+    return redirect(url_for('gestion_admin_profesor'))
+
+@app.route('/Delete_profesor_admin/<int:id>', methods=['POST'])
+def delete_profesor_admin(id):
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute("DELETE FROM cita_profesor WHERE id = %s", (id,))
+        mysql.connection.commit()
+        flash('Cita eliminada', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Error: {e}', 'error')
+    finally:
+        cursor.close()
+    return redirect(url_for('gestion_admin_profesor'))
+
+@app.route('/Editar_profesor_admin/<int:id>', methods=['POST'])
+def editar_profesor_admin(id):
+    FechaPR = request.form['FechaPR']
+    HoraPR = request.form['HoraPR']
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("UPDATE cita_profesor SET FechaPR = %s, HoraPR = %s WHERE id = %s", 
+                       (FechaPR, HoraPR, id))
+        mysql.connection.commit()
+        flash('Cita editada', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Error: {e}', 'error')
+    return redirect(url_for('gestion_admin_profesor'))
+
+
+
+
+
 
 
 
@@ -356,18 +459,18 @@ def delete(id):
         cur.close()
     return redirect(url_for('CRUD'))
 
-# Editar usuario con validaciones mejoradas
 @app.route('/editar/<string:id>', methods=['POST'])
 def editar(id):
     if 'email' not in session or not session.get('is_admin'):
         return jsonify({'success': False, 'message': 'No autorizado'}), 403
 
     try:
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form.get('password', '')
+        name = request.form['name'].strip()
+        email = request.form['email'].strip().lower()
+        password = request.form.get('password', '').strip()
+        lastName = request.form.get('lastName', '').strip()
 
-        # Validaciones
+        # Validaciones básicas
         if not name or not email:
             return jsonify({'success': False, 'message': 'Nombre y email son obligatorios'})
 
@@ -375,25 +478,30 @@ def editar(id):
             return jsonify({'success': False, 'message': 'Email no válido'})
 
         with mysql.connection.cursor() as cur:
-            # Verificar si el email ya existe en otro usuario
+            # Verificar si el email está en uso por otro usuario
             cur.execute("SELECT id FROM user WHERE email = %s AND id != %s", (email, id))
             if cur.fetchone():
-                return jsonify({'success': False, 'message': 'El email ya está en uso'})
+                return jsonify({'success': False, 'message': 'El correo ya está registrado por otro usuario'})
 
-            # Actualizar datos
             if password:
-                hashed_password = generate_password_hash(password)
-                cur.execute('UPDATE user SET name = %s, email = %s, password = %s WHERE id = %s',(name, email, hashed_password, id))
+                if len(password) < 8:
+                    return jsonify({'success': False, 'message': 'La contraseña debe tener al menos 8 caracteres'})
+                hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+                cur.execute("""
+                    UPDATE user SET name = %s, lastName = %s, email = %s, password = %s WHERE id = %s
+                """, (name, lastName, email, hashed_password, id))
             else:
-                cur.execute('UPDATE user SET name = %s, email = %s WHERE id = %s',(name, email, id))
+                cur.execute("""
+                    UPDATE user SET name = %s, lastName = %s, email = %s WHERE id = %s
+                """, (name, lastName, email, id))
 
             mysql.connection.commit()
-            return jsonify({'success': True, 'message': 'Usuario actualizado'})
+            return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'})
 
     except Exception as e:
         mysql.connection.rollback()
-        app.logger.error(f"Error al editar usuario: {str(e)}")
-        return jsonify({'success': False, 'message': 'Error en el servidor'}), 500
+        app.logger.error(f'Error al editar usuario: {str(e)}')
+        return jsonify({'success': False, 'message': 'Error interno del servidor'}), 500
 
 
 
