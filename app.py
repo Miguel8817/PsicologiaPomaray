@@ -223,7 +223,7 @@ def actualizar_estado_citas(id_cita):
 
 
 @app.route('/guardar_Admin', methods=['POST'])
-def guardar_cita():
+def guardar_admin():
     FechaPS = request.form['FechaPS']
     HoraPS = request.form['HoraPS']
     try:
@@ -254,7 +254,7 @@ def delete_admin(id):
 
 #Editar cita psicólogo
 @app.route('/editar_admin/<int:id>', methods=['POST'])
-def editar_cita(id):
+def editar_admin(id):
     fecha = request.form['FechaPS']
     hora = request.form['HoraPS']
     try:
@@ -323,8 +323,8 @@ def editar_profesor_admin(id):
         flash(f'Error: {e}', 'error')
     return redirect(url_for('gestion_admin_profesor'))
 
-@app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_cita(id_cita):
+@app.route('/cita_admin_profesor/<int:id_cita>/estado', methods=['POST'])
+def actualizar_estado_cita_admin(id_cita):
     nuevo_estado = request.form.get('estado')
 
     # Validar el estado recibido
