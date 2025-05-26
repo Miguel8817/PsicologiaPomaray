@@ -20,7 +20,7 @@
         <main class="app-content">
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
-                <form action="/admin/citas/psicologo/guardar" method="POST" class="appointment-form">
+                <form action="/Guardar_cita_admin" method="POST" class="appointment-form">
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
                         <input type="date" id="FechaPS" name="FechaPS" required>
@@ -58,13 +58,13 @@
                             <button class="btn-edit" onclick="openEditModal('{{ cita.id_psicologo }}', '{{ cita.FechaPS }}', '{{ cita.HoraPS }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form action="/admin/citas/psicologo/eliminar/{{ cita.id_psicologo }}" method="POST" class="delete-form">
+                            <form action="/delete_admin/{{ cita.id_psicologo }}" method="POST" class="delete-form">
                                 <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </div>
-                        <form action="/admin/citas/psicologo/estado/{{ cita.id_psicologo }}" method="POST" class="status-form">
+                        <form action="/cita_admin/{{ cita.id_psicologo }}" method="POST" class="status-form">
                             <select name="estado" onchange="this.form.submit()">
                                 <option value="Pendiente" {% if cita.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
                                 <option value="Confirmada" {% if cita.estado == 'Confirmada' %}selected{% endif %}>Confirmada</option>
@@ -87,7 +87,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" action="/admin/citas/psicologo/editar" method="POST" class="appointment-form">
+                <form id="editForm" action="/editar_admin" method="POST" class="appointment-form">
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
                         <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>

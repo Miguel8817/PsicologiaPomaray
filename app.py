@@ -222,7 +222,7 @@ def actualizar_estado_citas(id_cita):
     return redirect(url_for('gestion_admin'))
 
 
-@app.route('/guardar_Admin', methods=['POST'])
+@app.route('/Guardar_cita_admin', methods=['POST'])
 def guardar_admin():
     FechaPS = request.form['FechaPS']
     HoraPS = request.form['HoraPS']
@@ -271,7 +271,7 @@ def editar_admin(id):
 # -------------------- Admin profesor --------------------
 
 @app.route('/Gestion_profesor_admin')
-def gestion_profesor_admin():
+def gestion_profesorAdmin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_profesor")
     profesor = cur.fetchall()
