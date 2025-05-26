@@ -186,31 +186,28 @@ def usuario():
     
     try:
         with mysql.connection.cursor() as cursor:
-            # Obtener estadísticas para el usuario
+            # Consulta temporal sin el campo estado
             cursor.execute("""
                 SELECT 
                     (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s) AS citas_psi,
-                    (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s AND estado = 'completada') AS completadas_psi,
+                    (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s AND FechaPS < CURDATE()) AS completadas_psi,
                     (SELECT CONCAT(FechaPS, ' ', HoraPS) FROM cita_psicologo 
-                     WHERE id = %s AND FechaPS >= CURDATE() 
+                     WHERE id = %s AND FechaPS >= CURDATE()
                      ORDER BY FechaPS, HoraPS LIMIT 1) AS proxima_cita_psi,
                     (SELECT COUNT(*) FROM cita_profesor WHERE id = %s) AS citas_prof,
-                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND estado = 'completada') AS completadas_prof,
+                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND FechaPR < CURDATE()) AS completadas_prof,
                     (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND FechaPR = CURDATE()) AS citas_hoy_prof
             """, (user_id, user_id, user_id, user_id, user_id, user_id))
             
             stats = cursor.fetchone()
-            
-            # Convertir tupla a lista para acceder por índice
             stats_list = list(stats) if stats else [0]*6
             
-            # Obtener información del usuario
             cursor.execute("SELECT name, email FROM user WHERE id = %s", (user_id,))
             user_info = cursor.fetchone()
             
         return render_template('usuario.html', 
-                             stats=stats_list,
-                             name=user_info['name'] if user_info else 'Usuario')
+                            stats=stats_list,
+                            name=user_info['name'] if user_info else 'Usuario')
         
     except Exception as e:
         app.logger.error(f"Error al cargar panel usuario: {str(e)}")
