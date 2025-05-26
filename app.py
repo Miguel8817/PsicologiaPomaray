@@ -7,22 +7,22 @@ from dotenv import load_dotenv
 from datetime import datetime
 import re
 
-# Cargar variables de entorno
-load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config["ENV"] = os.getenv("FLASK_ENV", "production")  
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
-# Configuración MySQL
+# Reemplaza tu configuración actual con esta:
+# En la sección de configuración MySQL (reemplaza tu configuración actual)
 app.config['MYSQL_HOST'] = os.getenv('MYSQLHOST', 'gondola.proxy.rlwy.net')
 app.config['MYSQL_USER'] = os.getenv('MYSQLUSER', 'root')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQLPASSWORD', 'FXdwHwarfhTstLawaFdkVodXPzxBHXLG')
 app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE', 'railway')
-app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))
-app.config['MYSQL_CONNECT_TIMEOUT'] = 10
+app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))  # ¡Asegúrate de convertir a entero!
+app.config['MYSQL_CONNECT_TIMEOUT'] = 10  # Previene timeouts
 mysql = MySQL(app)
+
 
 # -------------------- RUTAS GENERALES --------------------
 
@@ -60,13 +60,13 @@ def record():
                 return redirect(url_for('iniciar_sesion'))
 
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-            
+
             cur.execute(
                 'INSERT INTO user (name, lastName, email, password) VALUES (%s, %s, %s, %s)',
                 (name, lastName, email, hashed_password)
             )
             mysql.connection.commit()
-            
+
             session['email'] = email
             flash('Registro exitoso.', 'success')
             return redirect(url_for('usuario'))
@@ -107,15 +107,15 @@ def iniciar_sesion():
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute("SELECT id, name, email, password FROM user WHERE email = %s", (email,))
             user = cursor.fetchone()
-            
+
             if not user:
                 flash('Credenciales incorrectas', 'error')
                 return render_template('login.html')
-            
+
             if not check_password_hash(user['password'], password):
                 flash('Credenciales incorrectas', 'error')
                 return render_template('login.html')
-            
+
             session.update({
                 'logged_in': True,
                 'user_id': user['id'],
@@ -124,24 +124,28 @@ def iniciar_sesion():
             })
             flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for('usuario'))
-            
+
         except Exception as e:
             app.logger.error(f"Error inesperado: {str(e)}")
             flash('Error técnico al iniciar sesión', 'error')
         finally:
             if cursor:
                 cursor.close()
-    
+
     return render_template('login.html')
 
 # -------------------- ADMINISTRADOR --------------------
 
 @app.route('/admin')
 def admin():
+    # Verificación mejorada de administrador
     if not session.get('is_admin') or not session.get('logged_in'):
         flash('Debes iniciar sesión como administrador para acceder a esta página', 'error')
         return redirect(url_for('iniciar_sesion'))
-    
+
+
+        # Resto del código...
+
     try:
         with mysql.connection.cursor() as cursor:
             cursor.execute("""
@@ -154,7 +158,7 @@ def admin():
                     (SELECT COUNT(*) FROM cita_profesor WHERE FechaPR >= CURDATE()) AS citas_hoy_prof
             """)
             stats = cursor.fetchone()
-            
+
             cursor.execute("""
                 SELECT id, name, lastName, email, created_at 
                 FROM user 
@@ -162,9 +166,9 @@ def admin():
                 LIMIT 10
             """)
             users = cursor.fetchall()
-            
+
         return render_template('admin.html', users=users, stats=stats)
-        
+
     except Exception as e:
         app.logger.error(f"Error en panel admin: {str(e)}")
         flash('Error al cargar el panel de administración', 'error')
@@ -172,44 +176,51 @@ def admin():
 
 # -------------------- USUARIOS CRUD --------------------
 
-@app.route('/usuario')
+@app.route('/usuarios')
 def usuario():
     if 'email' not in session:
         flash('Debes iniciar sesión', 'error')
         return redirect(url_for('iniciar_sesion'))
 
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM user")
+    users = cursor.fetchall()
+    cursor.close()
+    return render_template('usuario.html', user=users)
     user_id = session.get('user_id')
     
     try:
         with mysql.connection.cursor() as cursor:
+            # Obtener estadísticas para el usuario
             cursor.execute("""
                 SELECT 
                     (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s) AS citas_psi,
-                    (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s AND FechaPS < CURDATE()) AS completadas_psi,
+                    (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s AND estado = 'completada') AS completadas_psi,
                     (SELECT CONCAT(FechaPS, ' ', HoraPS) FROM cita_psicologo 
-                     WHERE id = %s AND FechaPS >= CURDATE()
+                     WHERE id = %s AND FechaPS >= CURDATE() 
                      ORDER BY FechaPS, HoraPS LIMIT 1) AS proxima_cita_psi,
                     (SELECT COUNT(*) FROM cita_profesor WHERE id = %s) AS citas_prof,
-                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND FechaPR < CURDATE()) AS completadas_prof,
+                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND estado = 'completada') AS completadas_prof,
                     (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND FechaPR = CURDATE()) AS citas_hoy_prof
             """, (user_id, user_id, user_id, user_id, user_id, user_id))
             
             stats = cursor.fetchone()
+            
+            # Convertir tupla a lista para acceder por índice
             stats_list = list(stats) if stats else [0]*6
             
+            # Obtener información del usuario
             cursor.execute("SELECT name, email FROM user WHERE id = %s", (user_id,))
             user_info = cursor.fetchone()
             
         return render_template('usuario.html', 
-                            stats=stats_list,
-                            name=user_info['name'] if user_info else 'Usuario')
+                             stats=stats_list,
+                             name=user_info['name'] if user_info else 'Usuario')
         
     except Exception as e:
         app.logger.error(f"Error al cargar panel usuario: {str(e)}")
         flash('Error al cargar tu panel', 'error')
         return redirect(url_for('index'))
-
-# ... (resto del código CRUD y de citas se mantiene igual)
 
 @app.route('/CRUD')
 def CRUD():
@@ -269,10 +280,10 @@ def guardar():
                 (email, name, lastName, hashed_password)
             )
             mysql.connection.commit()
-            
+
             flash('Usuario creado exitosamente', 'success')
             app.logger.info(f'Nuevo usuario creado: {email}')
-            
+
     except MySQLdb.Error as e:
         mysql.connection.rollback()
         error_msg = f'Error de base de datos: {e.args[1]}' if e.args else 'Error desconocido'
@@ -330,7 +341,7 @@ def editar(id):
             else:
                 cur.execute('UPDATE user SET name = %s, email = %s WHERE id = %s',
                           (name, email, id))
-            
+
             mysql.connection.commit()
             return jsonify({'success': True, 'message': 'Usuario actualizado'})
 
