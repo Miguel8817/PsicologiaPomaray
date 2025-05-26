@@ -3,70 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas con Profesores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/GestionProfesor.css">
-    <title>CRUD de Citas</title>
 </head>
 <body>
+    <div class="mobile-container">
+        <header class="app-header">
+            <a href="/usuarios" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1>Citas con Profesor</h1>
+            <div class="header-placeholder"></div>
+        </header>
 
-    <div class="volver-container">
-        <a href="/usuarios" class="btn-volver"><span>&larr;</span> Volver al panel de usuarios</a>
-    </div>
+        <main class="app-content">
+            <section class="add-appointment">
+                <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
+                <form action="/Guardar_cita_profesor" method="POST" class="appointment-form">
+                    <div class="form-group">
+                        <label for="FechaPR"><i class="far fa-calendar-alt"></i> Fecha</label>
+                        <input type="date" id="FechaPR" name="FechaPR" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="HoraPR"><i class="far fa-clock"></i> Hora</label>
+                        <input type="time" id="HoraPR" name="HoraPR" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> Guardar Cita
+                    </button>
+                </form>
+            </section>
 
-    <h1>Cita Profesor</h1>
+            <section class="appointments-list">
+                <h2><i class="fas fa-list-ul"></i> Mis Citas</h2>
+                <div class="appointments-container">
+                    {% for citas in profesor %}
+                    <div class="appointment-card">
+                        <div class="appointment-info">
+                            <div class="appointment-date">
+                                <i class="far fa-calendar"></i>
+                                <span>{{ citas.1 }}</span>
+                            </div>
+                            <div class="appointment-time">
+                                <i class="far fa-clock"></i>
+                                <span>{{ citas.2 if citas.2 else '--:--' }}</span>
+                            </div>
+                        </div>
+                        <div class="appointment-actions">
+                            <button class="btn-edit" onclick="openEditModal('{{ citas.0 }}', '{{ citas.1 }}', '{{ citas.2 }}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <form action="/Delete_cita_profesor/{{ citas.0 }}" method="POST" class="delete-form">
+                                <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
 
-    <div class="form-container">
-        <h2 class="form-title">Agregar Nueva Cita</h2>
-        <form action="/Guardar_cita_profesor" method="POST">
-            <input type="date" name="FechaPR" placeholder="Fecha de la cita" required>
-            <input type="time" name="HoraPR" placeholder="Hora de la cita" required>
-            <button type="submit">Guardar Cita</button>
-        </form>
-    </div>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for citas in profesor %}
-                <tr>
-                    <td>{{ citas.1 }}</td>
-                    <td>
-                        {% if citas.2 %}
-                            {{ citas.2 }}
-                        {% else %}
-                            -- --
-                        {% endif %}
-                    </td>
-                    <td>
-                        <button onclick="openEditModal('{{ citas.0 }}', '{{ citas.1 }}', '{{ citas.2 }}')" class="btn btn-edit">Editar</button>
-                        <form action="/Delete_cita_profesor/{{ citas.0 }}" method="POST" class="inline-form">
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Editar Cita</h2>
-                <span class="close" onclick="closeEditModal()">&times;</span>
+        <!-- Modal de Edición -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-edit"></i> Editar Cita</h3>
+                    <button class="close-modal" onclick="closeEditModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="editForm" action="/Editar_cita_profesor" method="POST" class="appointment-form">
+                    <input type="hidden" id="editId" name="id">
+                    <div class="form-group">
+                        <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>
+                        <input type="date" id="editFecha" name="FechaPR" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editHora"><i class="far fa-clock"></i> Hora</label>
+                        <input type="time" id="editHora" name="HoraPR" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </form>
             </div>
-            <form id="editForm" action="/Editar_cita_profesor" method="POST" onsubmit="event.preventDefault(); submitEditForm(this);">
-                <input type="hidden" id="editId" name="id">
-                <input type="date" id="editName" name="FechaPR" required>
-                <input type="time" id="editEmail" name="HoraPR" required>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            </form>
         </div>
     </div>
 
@@ -75,9 +98,10 @@
 
         function openEditModal(id, fecha, hora) {
             document.getElementById('editId').value = id;
-            document.getElementById('editName').value = fecha;
-            document.getElementById('editEmail').value = hora;
-            editModal.style.display = 'block';
+            document.getElementById('editFecha').value = fecha;
+            document.getElementById('editHora').value = hora;
+            document.getElementById('editForm').action = '/Editar_cita_profesor/' + id;
+            editModal.style.display = 'flex';
         }
 
         function closeEditModal() {
@@ -91,7 +115,7 @@
         }
 
         function submitEditForm(form) {
-            fetch(form.action + '/' + document.getElementById('editId').value, {
+            fetch(form.action, {
                 method: 'POST',
                 body: new FormData(form)
             })
@@ -110,6 +134,12 @@
                 console.error(error);
             });
         }
+
+        // Asignar el evento submit al formulario de edición
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitEditForm(this);
+        });
     </script>
 </body>
 </html>
