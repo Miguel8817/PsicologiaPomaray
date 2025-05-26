@@ -7,22 +7,22 @@ from dotenv import load_dotenv
 from datetime import datetime
 import re
 
+# Cargar variables de entorno
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config["ENV"] = os.getenv("FLASK_ENV", "production")  
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
-# Reemplaza tu configuración actual con esta:
-# En la sección de configuración MySQL (reemplaza tu configuración actual)
+# Configuración MySQL
 app.config['MYSQL_HOST'] = os.getenv('MYSQLHOST', 'gondola.proxy.rlwy.net')
 app.config['MYSQL_USER'] = os.getenv('MYSQLUSER', 'root')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQLPASSWORD', 'FXdwHwarfhTstLawaFdkVodXPzxBHXLG')
 app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE', 'railway')
-app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))  # ¡Asegúrate de convertir a entero!
-app.config['MYSQL_CONNECT_TIMEOUT'] = 10  # Previene timeouts
+app.config['MYSQL_PORT'] = int(os.getenv('MYSQLPORT', 45362))
+app.config['MYSQL_CONNECT_TIMEOUT'] = 10
 mysql = MySQL(app)
-
 
 # -------------------- RUTAS GENERALES --------------------
 
@@ -138,13 +138,9 @@ def iniciar_sesion():
 
 @app.route('/admin')
 def admin():
-    # Verificación mejorada de administrador
     if not session.get('is_admin') or not session.get('logged_in'):
         flash('Debes iniciar sesión como administrador para acceder a esta página', 'error')
         return redirect(url_for('iniciar_sesion'))
-    
-    
-        # Resto del código...
     
     try:
         with mysql.connection.cursor() as cursor:
@@ -186,7 +182,6 @@ def usuario():
     
     try:
         with mysql.connection.cursor() as cursor:
-            # Consulta temporal sin el campo estado
             cursor.execute("""
                 SELECT 
                     (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s) AS citas_psi,
@@ -213,6 +208,8 @@ def usuario():
         app.logger.error(f"Error al cargar panel usuario: {str(e)}")
         flash('Error al cargar tu panel', 'error')
         return redirect(url_for('index'))
+
+# ... (resto del código CRUD y de citas se mantiene igual)
 
 @app.route('/CRUD')
 def CRUD():
