@@ -195,7 +195,7 @@ def gestion_admin():
 
 
 @app.route('/Psicologo_cita_admin', methods=['GET', 'POST'])
-def agendar_psicologo():
+def agendar_psicologo_admin():
     if 'email' not in session:
         flash('Debes iniciar sesión', 'error')
         return redirect(url_for('iniciar_sesion'))
