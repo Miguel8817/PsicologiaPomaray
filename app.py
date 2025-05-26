@@ -182,45 +182,34 @@ def usuario():
         flash('Debes iniciar sesión', 'error')
         return redirect(url_for('iniciar_sesion'))
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM user")
-    users = cursor.fetchall()
-    cursor.close()
-    return render_template('usuario.html', user=users)
-    user_id = session.get('user_id')
-    
     try:
         with mysql.connection.cursor() as cursor:
-            # Obtener estadísticas para el usuario
             cursor.execute("""
                 SELECT 
-                    (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s) AS citas_psi,
-                    (SELECT COUNT(*) FROM cita_psicologo WHERE id = %s AND estado = 'completada') AS completadas_psi,
-                    (SELECT CONCAT(FechaPS, ' ', HoraPS) FROM cita_psicologo 
-                     WHERE id = %s AND FechaPS >= CURDATE() 
-                     ORDER BY FechaPS, HoraPS LIMIT 1) AS proxima_cita_psi,
-                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s) AS citas_prof,
-                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND estado = 'completada') AS completadas_prof,
-                    (SELECT COUNT(*) FROM cita_profesor WHERE id = %s AND FechaPR = CURDATE()) AS citas_hoy_prof
-            """, (user_id, user_id, user_id, user_id, user_id, user_id))
-            
+                    (SELECT COUNT(*) FROM user) AS total_usuarios,
+                    (SELECT COUNT(*) FROM cita_psicologo) AS citas_psicologo,
+                    (SELECT COUNT(*) FROM cita_profesor) AS citas_profesor,
+                    (SELECT COUNT(*) FROM user WHERE created_at >= CURDATE() - INTERVAL 7 DAY) AS nuevos_usuarios,
+                    (SELECT COUNT(*) FROM cita_psicologo WHERE FechaPS >= CURDATE()) AS citas_hoy_psi,
+                    (SELECT COUNT(*) FROM cita_profesor WHERE FechaPR >= CURDATE()) AS citas_hoy_prof
+            """)
             stats = cursor.fetchone()
-            
-            # Convertir tupla a lista para acceder por índice
-            stats_list = list(stats) if stats else [0]*6
-            
-            # Obtener información del usuario
-            cursor.execute("SELECT name, email FROM user WHERE id = %s", (user_id,))
-            user_info = cursor.fetchone()
-            
-        return render_template('usuario.html', 
-                             stats=stats_list,
-                             name=user_info['name'] if user_info else 'Usuario')
-        
+
+            cursor.execute("""
+                SELECT id, name, lastName, email, created_at 
+                FROM user 
+                ORDER BY created_at DESC 
+                LIMIT 10
+            """)
+            users = cursor.fetchall()
+
+        return render_template('admin.html', users=users, stats=stats)
     except Exception as e:
-        app.logger.error(f"Error al cargar panel usuario: {str(e)}")
-        flash('Error al cargar tu panel', 'error')
+        app.logger.error(f"Error en panel usuario: {str(e)}")
+        flash('Error al cargar el panel de usuario', 'error')
         return redirect(url_for('index'))
+
+
 
 @app.route('/CRUD')
 def CRUD():
