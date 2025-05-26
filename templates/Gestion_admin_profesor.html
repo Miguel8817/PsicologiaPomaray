@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Citas Psicológicas</title>
+    <title>Gestión de Citas Profesor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/Gestion_admin_profesor.css">
 </head>
 <body>
     <div class="mobile-container">
         <header class="app-header">
-            <button class="back-btn" onclick="window.location.href='/usuarios'">
+            <button class="back-btn" onclick="window.location.href='/admin'">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h1>Citas Psicólogo</h1>
+            <h1>Citas Profesor</h1>
             <div class="header-placeholder"></div>
         </header>
 
         <main class="app-content">
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
-                <form action="/Guardar_admin_profesor" method="POST" class="appointment-form">
+                <form action="/Guardar_profesor_admin" method="POST" class="appointment-form">
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
                         <input type="date" id="FechaPS" name="FechaPS" required>
@@ -54,7 +54,7 @@
                             <button class="btn-edit" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form action="/delete_admin_profesor/{{ cita.0 }}" method="POST" class="delete-form">
+                            <form action="/Delete_profesor_admin/{{ cita.0 }}" method="POST" class="delete-form">
                                 <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
@@ -83,7 +83,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" action="/editar_cita" method="POST" class="appointment-form">
+                <form id="editForm" action="/Editar_profesor_admin/{{ cita.0 }}" method="POST" class="appointment-form">
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
                         <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>

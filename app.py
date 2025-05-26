@@ -195,7 +195,7 @@ def gestion_admin():
 
 
 @app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_cita(id_cita):
+def actualizar_estado_citas(id_cita):
     nuevo_estado = request.form.get('estado')
 
     # Validar el estado recibido
@@ -222,8 +222,8 @@ def actualizar_estado_cita(id_cita):
     return redirect(url_for('gestion_admin'))
 
 
-@app.route('/guardar_Admin', methods=['POST'])
-def guardar_cita():
+@app.route('/Guardar_cita_admin', methods=['POST'])
+def guardar_admin():
     FechaPS = request.form['FechaPS']
     HoraPS = request.form['HoraPS']
     try:
@@ -254,7 +254,7 @@ def delete_admin(id):
 
 #Editar cita psicólogo
 @app.route('/editar_admin/<int:id>', methods=['POST'])
-def editar_cita(id):
+def editar_admin(id):
     fecha = request.form['FechaPS']
     hora = request.form['HoraPS']
     try:
@@ -271,7 +271,7 @@ def editar_cita(id):
 # -------------------- Admin profesor --------------------
 
 @app.route('/Gestion_profesor_admin')
-def gestion_profesor_admin():
+def gestion_profesorAdmin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_profesor")
     profesor = cur.fetchall()
@@ -322,6 +322,31 @@ def editar_profesor_admin(id):
         mysql.connection.rollback()
         flash(f'Error: {e}', 'error')
     return redirect(url_for('gestion_admin_profesor'))
+
+@app.route('/cita_admin_profesor/<int:id_cita>/estado', methods=['POST'])
+def actualizar_estado_cita_admin(id_cita):
+    nuevo_estado = request.form.get('estado')
+
+    # Validar el estado recibido
+    estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
+    if nuevo_estado not in estados_validos:
+        flash('Estado inválido.', 'error')
+        return redirect(url_for('GestionCitas'))
+
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            UPDATE cita_psicologo 
+            SET estado = %s 
+            WHERE id_psicologo = %s
+        """, (nuevo_estado, id_cita))
+        mysql.connection.commit()
+        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash('Error al actualizar la cita.', 'error')
+    finally:
+        cursor.close()
 
 
 
