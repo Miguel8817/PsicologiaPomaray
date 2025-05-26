@@ -122,50 +122,64 @@
       <section class="stats-overview">
         =
         
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon primary">
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Programadas</h3>
-              <p class="stat-value">{{stats.0}}</p>
-              <p class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> Hoy
-              </p>
-            </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon success">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Completadas</h3>
-              <p class="stat-value">{{stats.0}}</p>
-              <p class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> {{stats.0}} Este mes
-              </p>
-            </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon warning">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Citas hacia profesores</h3>
-              <p class="stat-value">{{stats.5}}</p>
-              <p class="stat-detail">Hoy</p>
-            </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon danger">
-              <i class="fas fa-calendar-times"></i>
-            </div>
-          </div>
-        </div>
+        <!-- En la sección de Stats Overview -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon primary">
+      <i class="fas fa-calendar-check"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Programadas</h3>
+      <p class="stat-value">{{ stats[0] if stats and stats[0] else '0' }}</p>
+      <p class="stat-change positive">
+        <i class="fas fa-arrow-up"></i> Hoy
+      </p>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon success">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Completadas</h3>
+      <p class="stat-value">{{ stats[1] if stats and stats[1] else '0' }}</p>
+      <p class="stat-change positive">
+        <i class="fas fa-arrow-up"></i> Este mes
+      </p>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon warning">
+      <i class="fas fa-clock"></i>
+    </div>
+    <div class="stat-info">
+      <h3>Citas hacia profesores</h3>
+      <p class="stat-value">{{ stats[5] if stats and stats[5] else '0' }}</p>
+      <p class="stat-detail">Hoy</p>
+    </div>
+  </div>
+</div>
+
+<!-- En la sección de Upcoming Appointments -->
+<div class="appointment-card">
+  <div class="appointment-time">
+    <span class="time">{{ stats[2].split()[1] if stats and stats[2] else '--:--' }}</span>
+  </div>
+  <div class="appointment-details">
+    <div class="appointment-header">
+      <h3>Cita con Psicólogo</h3>
+      <span class="status-badge confirmed">Programada</span>
+    </div>
+    <p class="appointment-meta">
+      <i class="fas fa-user-md"></i> Psicólogo
+    </p>
+    <p class="appointment-meta">
+      <i class="fas fa-map-marker-alt"></i> Ubicación
+    </p>
+  </div>
+</div>
       </section>
 
       <!-- Upcoming Appointments -->
