@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Citas Psicológicas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/GestionAdmin.css">
+    <link rel="stylesheet" href="/static/css/Gestion_admin_profesor.css">
 </head>
 <body>
     <div class="mobile-container">
         <header class="app-header">
-            <button class="back-btn" onclick="window.location.href='/usuarios'">
+            <button class="back-btn" onclick="window.location.href='/admin'">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h1>Citas Psicólogo</h1>
+            <h1>Citas Psicológicas</h1>
             <div class="header-placeholder"></div>
         </header>
 
         <main class="app-content">
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
-                <form action="/guardar_Admin" method="POST" class="appointment-form">
+                <form action="/admin/citas/psicologo/guardar" method="POST" class="appointment-form">
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
                         <input type="date" id="FechaPS" name="FechaPS" required>
@@ -36,37 +36,41 @@
             </section>
 
             <section class="appointments-list">
-                <h2><i class="fas fa-list-ul"></i> Mis Citas</h2>
+                <h2><i class="fas fa-list-ul"></i> Citas Programadas</h2>
                 <div class="appointments-container">
-                    {% for cita in psicologo %}
+                    {% for cita in citas %}
                     <div class="appointment-card">
                         <div class="appointment-info">
                             <div class="appointment-date">
                                 <i class="far fa-calendar"></i>
-                                <span>{{ cita.1 }}</span>
+                                <span>{{ cita.FechaPS }}</span>
                             </div>
                             <div class="appointment-time">
                                 <i class="far fa-clock"></i>
-                                <span>{{ cita.2 if cita.2 else '--:--' }}</span>
+                                <span>{{ cita.HoraPS if cita.HoraPS else '--:--' }}</span>
+                            </div>
+                            <div class="appointment-status">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="status-{{ cita.estado.lower() }}">{{ cita.estado }}</span>
                             </div>
                         </div>
                         <div class="appointment-actions">
-                            <button class="btn-edit" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
+                            <button class="btn-edit" onclick="openEditModal('{{ cita.id_psicologo }}', '{{ cita.FechaPS }}', '{{ cita.HoraPS }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form action="/delete_admin/{{ cita.0 }}" method="POST" class="delete-form">
+                            <form action="/admin/citas/psicologo/eliminar/{{ cita.id_psicologo }}" method="POST" class="delete-form">
                                 <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </div>
-                        <form action="/cita_admin/{{ cita.0 }}" method="POST" style="display: inline;">
-                            <select name="estado">
-                                <option value="enviada" {% if cita.estado == 'enviada' %}selected{% endif %}>Enviada</option>
-                                <option value="aceptada" {% if cita.estado == 'aceptada' %}selected{% endif %}>Aceptada</option>
-                                <option value="rechazada" {% if cita.estado == 'rechazada' %}selected{% endif %}>Rechazada</option>
+                        <form action="/admin/citas/psicologo/estado/{{ cita.id_psicologo }}" method="POST" class="status-form">
+                            <select name="estado" onchange="this.form.submit()">
+                                <option value="Pendiente" {% if cita.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="Confirmada" {% if cita.estado == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                                <option value="Cancelada" {% if cita.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                                <option value="Completada" {% if cita.estado == 'Completada' %}selected{% endif %}>Completada</option>
                             </select>
-                            <button type="submit">Cambiar</button>
                         </form>
                     </div>
                     {% endfor %}
@@ -83,7 +87,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" action="/editar_admin" method="POST" class="appointment-form">
+                <form id="editForm" action="/admin/citas/psicologo/editar" method="POST" class="appointment-form">
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
                         <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>
@@ -108,7 +112,7 @@
             document.getElementById('editId').value = id;
             document.getElementById('editFecha').value = fecha;
             document.getElementById('editHora').value = hora;
-            document.getElementById('editForm').action = '/editar_cita/' + id;
+            document.getElementById('editForm').action = '/admin/citas/psicologo/editar/' + id;
             editModal.style.display = 'flex';
         }
 
@@ -121,6 +125,13 @@
                 closeEditModal();
             }
         }
+
+        // Validación de fecha futura
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('FechaPS').min = today;
+            document.getElementById('editFecha').min = today;
+        });
     </script>
 </body>
 </html>
