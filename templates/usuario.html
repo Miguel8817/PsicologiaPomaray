@@ -243,7 +243,7 @@
   </div>
 
   <!-- Quick Action Button for Mobile -->
-  <button class="floating-action-btn" aria-label="Acción rápida">
+  <button class="floating-action-btn" id="citaBtn" aria-label="Acción rápida">
     <i class="fas fa-plus"></i>
   </button>
 
@@ -258,7 +258,7 @@
     });
 
     document.getElementById('citaBtn').addEventListener('click', function() {
-      window.location.href = '/GestionCitas';
+      window.location.href = '/GestionCita';
     });
 
     closeSidebar.addEventListener('click', () => {
