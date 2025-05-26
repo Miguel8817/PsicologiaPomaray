@@ -13,9 +13,9 @@
 <body>
   <div class="dashboard-container">
     <!-- Botón de menú móvil -->
-    <button class="mobile-menu-btn">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
       <i class="fas fa-bars"></i>
-  </button>
+    </button>
     
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
@@ -247,6 +247,33 @@
     <i class="fas fa-plus"></i>
   </button>
 
-  <script src="/static/js/admin.js"></script>
+  <script>
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      sidebar.classList.add('active');
+    });
+
+    closeSidebar.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    // Smooth transitions
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+  </script>
 </body>
 </html>
