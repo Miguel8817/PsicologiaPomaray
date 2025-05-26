@@ -189,7 +189,7 @@ def admin():
     
     
     
-@app.route('/GestionAdmin.html')
+@app.route('/GestionAdmin')
 def gestion_admin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_psicologo")
