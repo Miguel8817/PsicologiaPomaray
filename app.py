@@ -195,7 +195,7 @@ def gestion_admin():
 
 
 @app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_cita(id_cita):
+def actualizar_estado_citas(id_cita):
     nuevo_estado = request.form.get('estado')
 
     # Validar el estado recibido
