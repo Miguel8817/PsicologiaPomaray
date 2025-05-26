@@ -10,7 +10,7 @@
 <body>
     <div class="mobile-container">
         <header class="app-header">
-            <button class="back-btn" onclick="window.location.href='/usuarios'">
+            <button class="back-btn" onclick="window.location.href='/usuarios'" type="button" title="Volver">
                 <i class="fas fa-arrow-left"></i>
             </button>
             <h1>Citas Psicólogo</h1>
@@ -21,6 +21,7 @@
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
                 <form action="/guardar_cita" method="POST" class="appointment-form">
+                    {{ csrf_token() }}
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
                         <input type="date" id="FechaPS" name="FechaPS" required>
@@ -47,21 +48,20 @@
                             </div>
                             <div class="appointment-time">
                                 <i class="far fa-clock"></i>
-                                <span>{{ cita.2 if cita.2 else '--:--' }}</span>
+                                <span>{{ cita.hora if cita.hora else '--:--' }}</span>
                             </div>
                         </div>
                         <div class="appointment-actions">
-                            <button class="btn-edit" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
+                            <button class="btn-edit" type="button" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')" title="Editar cita">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <form action="/delete_cita/{{ cita.0 }}" method="POST" class="delete-form">
-                                <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
+                                {{ csrf_token() }}
+                                <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')" title="Eliminar cita">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </div>
-                        
-                        
                     </div>
                     {% endfor %}
                 </div>
@@ -73,11 +73,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3><i class="fas fa-edit"></i> Editar Cita</h3>
-                    <button class="close-modal" onclick="closeEditModal()">
+                    <button class="close-modal" type="button" onclick="closeEditModal()" title="Cerrar">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" action="/editar_cita" method="POST" class="appointment-form">
+                <form id="editForm" method="POST" class="appointment-form">
+                    {{ csrf_token() }}
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
                         <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>
@@ -111,7 +112,7 @@
         }
 
         window.onclick = function(event) {
-            if (event.target == editModal) {
+            if (event.target === editModal) {
                 closeEditModal();
             }
         }

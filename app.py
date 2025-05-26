@@ -190,7 +190,7 @@ def admin():
     
     
 @app.route('/GestionAdmin.html')
-def gestion_citas():
+def gestion_admin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_psicologo")
     psicologo = cur.fetchall()
@@ -223,7 +223,7 @@ def actualizar_estado_cita(id_cita):
     finally:
         cursor.close()
 
-    return redirect(url_for('GestionAdmin'))
+    return redirect(url_for('gestion_admin'))
 
 
 
@@ -356,18 +356,18 @@ def delete(id):
         cur.close()
     return redirect(url_for('CRUD'))
 
-# Editar usuario con validaciones mejoradas
 @app.route('/editar/<string:id>', methods=['POST'])
 def editar(id):
     if 'email' not in session or not session.get('is_admin'):
         return jsonify({'success': False, 'message': 'No autorizado'}), 403
 
     try:
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form.get('password', '')
+        name = request.form['name'].strip()
+        email = request.form['email'].strip().lower()
+        password = request.form.get('password', '').strip()
+        lastName = request.form.get('lastName', '').strip()
 
-        # Validaciones
+        # Validaciones básicas
         if not name or not email:
             return jsonify({'success': False, 'message': 'Nombre y email son obligatorios'})
 
@@ -375,25 +375,30 @@ def editar(id):
             return jsonify({'success': False, 'message': 'Email no válido'})
 
         with mysql.connection.cursor() as cur:
-            # Verificar si el email ya existe en otro usuario
+            # Verificar si el email está en uso por otro usuario
             cur.execute("SELECT id FROM user WHERE email = %s AND id != %s", (email, id))
             if cur.fetchone():
-                return jsonify({'success': False, 'message': 'El email ya está en uso'})
+                return jsonify({'success': False, 'message': 'El correo ya está registrado por otro usuario'})
 
-            # Actualizar datos
             if password:
-                hashed_password = generate_password_hash(password)
-                cur.execute('UPDATE user SET name = %s, email = %s, password = %s WHERE id = %s',(name, email, hashed_password, id))
+                if len(password) < 8:
+                    return jsonify({'success': False, 'message': 'La contraseña debe tener al menos 8 caracteres'})
+                hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+                cur.execute("""
+                    UPDATE user SET name = %s, lastName = %s, email = %s, password = %s WHERE id = %s
+                """, (name, lastName, email, hashed_password, id))
             else:
-                cur.execute('UPDATE user SET name = %s, email = %s WHERE id = %s',(name, email, id))
+                cur.execute("""
+                    UPDATE user SET name = %s, lastName = %s, email = %s WHERE id = %s
+                """, (name, lastName, email, id))
 
             mysql.connection.commit()
-            return jsonify({'success': True, 'message': 'Usuario actualizado'})
+            return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'})
 
     except Exception as e:
         mysql.connection.rollback()
-        app.logger.error(f"Error al editar usuario: {str(e)}")
-        return jsonify({'success': False, 'message': 'Error en el servidor'}), 500
+        app.logger.error(f'Error al editar usuario: {str(e)}')
+        return jsonify({'success': False, 'message': 'Error interno del servidor'}), 500
 
 
 

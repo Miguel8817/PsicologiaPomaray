@@ -68,14 +68,6 @@
                             </select>
                             <button type="submit">Cambiar</button>
                         </form>
-                        <form action="/cita" method="POST" style="display: inline;">
-                            <select name="estado">
-                                <option value="enviada" {% if cita.estado == 'enviada' %}selected{% endif %}>Enviada</option>
-                                <option value="aceptada" {% if cita.estado == 'aceptada' %}selected{% endif %}>Aceptada</option>
-                                <option value="rechazada" {% if cita.estado == 'rechazada' %}selected{% endif %}>Rechazada</option>
-                            </select>
-                            <button type="submit">Cambiar</button>
-                        </form>
                     </div>
                     {% endfor %}
                 </div>
