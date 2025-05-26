@@ -194,6 +194,40 @@ def gestion_admin():
     return render_template('GestionAdmin.html', psicologo=psicologo)
 
 
+@app.route('/Psicologo_cita_admin', methods=['GET', 'POST'])
+def agendar_psicologo():
+    if 'email' not in session:
+        flash('Debes iniciar sesión', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT id FROM user WHERE email = %s", (session['email'],))
+    user = cur.fetchone()
+    user_id = user['id']
+    cur.close()
+
+    if request.method == 'POST':
+        FechaPS = request.form['FechaPS']
+        HoraPS = request.form['HoraPS']
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO cita_psicologo (FechaPS, HoraPS, id) VALUES (%s, %s, %s)", (FechaPS, HoraPS, user_id))
+            mysql.connection.commit()
+            flash('Cita agendada', 'success')
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Error: {e}', 'error')
+        finally:
+            cur.close()
+        return redirect(url_for('agendar_psicologo'))
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM cita_psicologo WHERE id = %s", (user_id,))
+    citas = cur.fetchall()
+    cur.close()
+    return render_template('agendar_Psicologo.html', citas=citas)
+
+
 @app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
 def actualizar_estado_citas(id_cita):
     nuevo_estado = request.form.get('estado')
