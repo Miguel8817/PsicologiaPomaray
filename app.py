@@ -176,7 +176,7 @@ def admin():
 
 # -------------------- USUARIOS CRUD --------------------
 
-@app.route('/usuarios')
+@app.route('/usuario')
 def usuario():
     if 'email' not in session:
         flash('Debes iniciar sesión', 'error')
