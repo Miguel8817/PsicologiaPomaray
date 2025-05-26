@@ -130,7 +130,7 @@
             </div>
             <div class="stat-info">
               <h3>Programadas</h3>
-              <p class="stat-value">{{stats.0}}</p>
+              <p class="stat-value">{{stats.0 + stats.5}}</p>
               <p class="stat-change positive">
                 <i class="fas fa-arrow-up"></i> Hoy
               </p>
@@ -142,7 +142,7 @@
               <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-info">
-              <h3>Completadas</h3>
+              <h3>Citas con Psicologos</h3>
               <p class="stat-value">{{stats.0}}</p>
               <p class="stat-change positive">
                 <i class="fas fa-arrow-up"></i> {{stats.0}} Este mes
@@ -165,11 +165,6 @@
             <div class="stat-icon danger">
               <i class="fas fa-calendar-times"></i>
             </div>
-            <div class="stat-info">
-              <h3>Canceladas</h3>
-              <p class="stat-value">0</p>
-              <p class="stat-detail">Este mes</p>
-            </div>
           </div>
         </div>
       </section>
@@ -178,7 +173,7 @@
       <section class="upcoming-appointments">
         <div class="section-header">
           <h2>Próximas Citas</h2>
-          <a href="#" class="view-all">Ver todas</a>
+          <a href="/GestionCita" class="view-all">Ver todas</a>
         </div>
         
         <div class="appointments-list">
