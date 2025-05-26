@@ -27,6 +27,9 @@ app.config['MYSQL_CONNECT_TIMEOUT'] = 10  # Previene timeouts
 mysql = MySQL(app)
 
 
+
+
+
 # -------------------- RUTAS GENERALES --------------------
 
 #Index
@@ -141,9 +144,10 @@ def iniciar_sesion():
 
     return render_template('login.html')
 
+
+
+
 # -------------------- ADMINISTRADOR --------------------
-
-
 @app.route('/admin')
 def admin():
     # Verificación mejorada de administrador
@@ -220,6 +224,10 @@ def actualizar_estado_cita(id_cita):
         cursor.close()
 
     return redirect(url_for('GestionAdmin'))
+
+
+
+
 
 # -------------------- USUARIOS CRUD --------------------
 
@@ -386,6 +394,11 @@ def editar(id):
         mysql.connection.rollback()
         app.logger.error(f"Error al editar usuario: {str(e)}")
         return jsonify({'success': False, 'message': 'Error en el servidor'}), 500
+
+
+
+
+
 
 # -------------------- CITAS PSICÓLOGO --------------------
 
@@ -558,35 +571,6 @@ def editar_cita_profesor(id):
         mysql.connection.rollback()
         flash(f'Error: {e}', 'error')
     return redirect(url_for('gestion_citas_profesor'))
-
-
-
-@app.route('/cita/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_cita(id_cita):
-    nuevo_estado = request.form.get('estado')
-
-    # Validar el estado recibido
-    estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
-    if nuevo_estado not in estados_validos:
-        flash('Estado inválido.', 'error')
-        return redirect(url_for('GestionCitas'))
-
-    try:
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            UPDATE cita_psicologo 
-            SET estado = %s 
-            WHERE id_psicologo = %s
-        """, (nuevo_estado, id_cita))
-        mysql.connection.commit()
-        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
-    except Exception as e:
-        mysql.connection.rollback()
-        flash('Error al actualizar la cita.', 'error')
-    finally:
-        cursor.close()
-
-    return redirect(url_for('GestionCitas'))
 
 
 # -------------------- INICIAR APLICACIÓN --------------------
