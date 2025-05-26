@@ -61,14 +61,6 @@
             </a>
           </li>
           <li class="divider"></li>
-          <li>
-            <a href="/configuracion">
-              <div class="menu-icon">
-                <i class="fas fa-cog"></i>
-              </div>
-              <span>Configuración</span>
-            </a>
-          </li>
           <li class="logout">
             <a href="/logout">
               <div class="menu-icon">
@@ -130,7 +122,7 @@
             </div>
             <div class="stat-info">
               <h3>Programadas</h3>
-              <p class="stat-value">{{stats.0}}</p>
+              <p class="stat-value">{{stats.0 + stats.5}}</p>
               <p class="stat-change positive">
                 <i class="fas fa-arrow-up"></i> Hoy
               </p>
@@ -142,7 +134,7 @@
               <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-info">
-              <h3>Completadas</h3>
+              <h3>Citas con Psicologos</h3>
               <p class="stat-value">{{stats.0}}</p>
               <p class="stat-change positive">
                 <i class="fas fa-arrow-up"></i> {{stats.0}} Este mes
@@ -165,11 +157,6 @@
             <div class="stat-icon danger">
               <i class="fas fa-calendar-times"></i>
             </div>
-            <div class="stat-info">
-              <h3>Canceladas</h3>
-              <p class="stat-value">0</p>
-              <p class="stat-detail">Este mes</p>
-            </div>
           </div>
         </div>
       </section>
@@ -178,7 +165,7 @@
       <section class="upcoming-appointments">
         <div class="section-header">
           <h2>Próximas Citas</h2>
-          <a href="#" class="view-all">Ver todas</a>
+          <a href="/GestionCita" class="view-all">Ver todas</a>
         </div>
         
         <div class="appointments-list">
@@ -188,7 +175,7 @@
             </div>
             <div class="appointment-details">
               <div class="appointment-header">
-                <h3>Cita con Psicólogo</h3>
+                <h3>Cita con Profesor</h3>
                 <span class="status-badge confirmed">{{stats.0}}</span>
               </div>
               <p class="appointment-meta">
@@ -197,33 +184,25 @@
               <p class="appointment-meta">
                 <i class="fas fa-map-marker-alt"></i> Pomaray
               </p>
-              <div class="appointment-actions">
-                <button class="appointment-btn outline">Detalles</button>
-                <button class="appointment-btn primary">Unirse</button>
-              </div>
             </div>
           </div>
           
           <div class="appointment-card">
             <div class="appointment-time">
-              <span class="time">02:30</span>
-              <span class="period">PM</span>
+              <span class="time">{{stats.2}}</span>
+              
             </div>
             <div class="appointment-details">
               <div class="appointment-header">
                 <h3>Psicologa</h3>
-                <span class="status-badge pending">Confirmada</span>
+                <span class="status-badge pending">{{stats.5}}</span>
               </div>
               <p class="appointment-meta">
-                <i class="fas fa-chalkboard-teacher"></i> Psicologa
+                <i class="fas fa-chalkboard-teacher"></i> Psc. Maria la de barrios
               </p>
               <p class="appointment-meta">
                 <i class="fas fa-map-marker-alt"></i> Pomaray
               </p>
-              <div class="appointment-actions">
-                <button class="appointment-btn outline">Detalles</button>
-                <button class="appointment-btn primary">Unirse</button>
-              </div>
             </div>
           </div>
         </div>
@@ -231,10 +210,7 @@
 
       <!-- Recent Activity -->
       <section class="recent-activity">
-        <div class="section-header">
-          <h2>Actividad Reciente</h2>
-          <a href="#" class="view-all">Ver historial completo</a>
-        </div>
+        
         
         <div class="activity-timeline">
           <div class="activity-item">
