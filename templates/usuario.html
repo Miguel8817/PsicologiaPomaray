@@ -257,6 +257,10 @@
       sidebar.classList.add('active');
     });
 
+    document.getElementById('citaBtn').addEventListener('click', function() {
+      window.location.href = '/GestionCitas';
+    });
+
     closeSidebar.addEventListener('click', () => {
       sidebar.classList.remove('active');
     });
