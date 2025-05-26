@@ -270,16 +270,32 @@ def editar_admin(id):
 
 # -------------------- Admin profesor --------------------
 
+# -------------------- Admin profesor --------------------
+
 @app.route('/Gestion_profesor_admin')
 def gestion_profesorAdmin():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM cita_profesor")
-    profesor = cur.fetchall()
-    cur.close()
-    return render_template('Gestion_admin_profesor.html', profesor=profesor)
+    if not session.get('is_admin') or not session.get('logged_in'):
+        flash('Debes iniciar sesión como administrador para acceder a esta página', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM cita_profesor")
+        profesores = cur.fetchall()
+        return render_template('Gestion_admin_profesor.html', profesores=profesores)
+    except Exception as e:
+        flash(f'Error al cargar citas: {str(e)}', 'error')
+        return redirect(url_for('admin'))
+    finally:
+        if 'cur' in locals():
+            cur.close()
 
 @app.route('/Guardar_profesor_admin', methods=['POST'])
 def guardar_profesor_admin():
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
     FechaPR = request.form['FechaPR']
     HoraPR = request.form['HoraPR']
     try:
@@ -292,10 +308,17 @@ def guardar_profesor_admin():
     except Exception as e:
         mysql.connection.rollback()
         flash(f'Error: {e}', 'error')
-    return redirect(url_for('gestion_admin_profesor'))
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+    return redirect(url_for('gestion_profesorAdmin'))  # Corregido el nombre de la ruta
 
 @app.route('/Delete_profesor_admin/<int:id>', methods=['POST'])
 def delete_profesor_admin(id):
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
     cursor = mysql.connection.cursor()
     try:
         cursor.execute("DELETE FROM cita_profesor WHERE id = %s", (id,))
@@ -306,22 +329,28 @@ def delete_profesor_admin(id):
         flash(f'Error: {e}', 'error')
     finally:
         cursor.close()
-    return redirect(url_for('gestion_admin_profesor'))
+    return redirect(url_for('gestion_profesorAdmin'))  # Corregido el nombre de la ruta
 
 @app.route('/Editar_profesor_admin/<int:id>', methods=['POST'])
 def editar_profesor_admin(id):
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
     FechaPR = request.form['FechaPR']
     HoraPR = request.form['HoraPR']
     try:
         cursor = mysql.connection.cursor()
         cursor.execute("UPDATE cita_profesor SET FechaPR = %s, HoraPR = %s WHERE id = %s", 
-                       (FechaPR, HoraPR, id))
+                      (FechaPR, HoraPR, id))
         mysql.connection.commit()
         flash('Cita editada', 'success')
     except Exception as e:
         mysql.connection.rollback()
         flash(f'Error: {e}', 'error')
-    return redirect(url_for('gestion_admin_profesor'))
+    finally:
+        cursor.close()
+    return redirect(url_for('gestion_profesorAdmin'))  # Corregido el nombre de la ruta
 
 @app.route('/cita_admin_profesor/<int:id_cita>/estado', methods=['POST'])
 def actualizar_estado_cita_admin(id_cita):
