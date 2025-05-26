@@ -20,7 +20,7 @@
         <main class="app-content">
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
-                <form action="/guardar_cita" method="POST" class="appointment-form">
+                <form action="/Guardar_cita_admin" method="POST" class="appointment-form">
                     {{ csrf_token() }}
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
@@ -55,7 +55,7 @@
                             <button class="btn-edit" type="button" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')" title="Editar cita">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form action="/delete_cita/{{ cita.0 }}" method="POST" class="delete-form">
+                            <form action="/delete_admin/{{ cita.0 }}" method="POST" class="delete-form">
                                 {{ csrf_token() }}
                                 <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')" title="Eliminar cita">
                                     <i class="fas fa-trash-alt"></i>
@@ -77,7 +77,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" method="POST" class="appointment-form">
+                <form id="editForm" method="POST" class="appointment-form" action="/editar_admin">
                     {{ csrf_token() }}
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
