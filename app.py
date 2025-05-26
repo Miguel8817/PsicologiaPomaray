@@ -203,7 +203,7 @@ def usuario():
             """)
             users = cursor.fetchall()
 
-        return render_template('admin.html', users=users, stats=stats)
+        return render_template('usuarios.html', users=users, stats=stats)
     except Exception as e:
         app.logger.error(f"Error en panel usuario: {str(e)}")
         flash('Error al cargar el panel de usuario', 'error')
