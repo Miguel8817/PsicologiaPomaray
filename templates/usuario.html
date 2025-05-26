@@ -24,7 +24,7 @@
             <i class="fas fa-user-circle"></i>
           </div>
           <div class="user-info">
-            <span class="name">{{ session.name|default('Usuario') }}</span>
+            <span class="name">{{ name }}</span>
             <span class="role">Estudiante</span>
           </div>
         </div>
@@ -82,7 +82,6 @@
         <div class="university-brand">
           <span>Sistema de Citas</span>
         </div>
-        
       </div>
     </aside>
 
@@ -95,7 +94,6 @@
           <input type="text" placeholder="Buscar citas, profesores...">
         </div>
         <div class="user-actions">
-          
           <div class="quick-actions">
             <button class="action-btn" aria-label="Nueva cita rápida">
               <i class="fas fa-plus"></i>
@@ -107,7 +105,7 @@
       <!-- Welcome Banner -->
       <section class="welcome-banner">
         <div class="welcome-content">
-          <h1>Bienvenido, <span>{{ session.name|default('Estudiante') }}</span></h1>
+          <h1>Bienvenido, <span>{{ name }}</span></h1>
           <p>Aquí puedes gestionar todas tus citas</p>
           <a href="/Psicologo_cita" class="cta-button">
             <i class="fas fa-plus"></i> Agendar nueva cita
@@ -120,161 +118,93 @@
 
       <!-- Stats Overview -->
       <section class="stats-overview">
-        =
-        
- <!-- Stats Overview -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon primary">
-      <i class="fas fa-calendar-check"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Citas Psicólogo</h3>
-      <p class="stat-value">{{ stats[0] if stats and stats[0] else '0' }}</p>
-      <p class="stat-change">Total programadas</p>
-    </div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon success">
-      <i class="fas fa-check-circle"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Completadas</h3>
-      <p class="stat-value">{{ stats[1] if stats and stats[1] else '0' }}</p>
-      <p class="stat-change">Con psicólogo</p>
-    </div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon warning">
-      <i class="fas fa-chalkboard-teacher"></i>
-    </div>
-    <div class="stat-info">
-      <h3>Citas Profesor</h3>
-      <p class="stat-value">{{ stats[3] if stats and stats[3] else '0' }}</p>
-      <p class="stat-change">Total programadas</p>
-    </div>
-  </div>
-</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon primary">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Citas Psicólogo</h3>
+              <p class="stat-value">{{ stats[0] if stats and stats[0] else '0' }}</p>
+              <p class="stat-change">Total programadas</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Completadas</h3>
+              <p class="stat-value">{{ stats[1] if stats and stats[1] else '0' }}</p>
+              <p class="stat-change">Con psicólogo</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Citas Profesor</h3>
+              <p class="stat-value">{{ stats[3] if stats and stats[3] else '0' }}</p>
+              <p class="stat-change">Total programadas</p>
+            </div>
+          </div>
+        </div>
 
-<!-- Próxima cita -->
-{% if stats and stats[2] %}
-<div class="appointment-card">
-  <div class="appointment-time">
-    <span class="time">{{ stats[2].split()[1][:5] }}</span>
-  </div>
-  <div class="appointment-details">
-    <div class="appointment-header">
-      <h3>Próxima cita</h3>
-      <span class="status-badge confirmed">Programada</span>
-    </div>
-    <p class="appointment-meta">
-      <i class="fas fa-calendar-day"></i> {{ stats[2].split()[0] }}
-    </p>
-    <p class="appointment-meta">
-      <i class="fas fa-user-md"></i> Psicólogo
-    </p>
-  </div>
-</div>
-{% endif %}
+        <!-- Próxima cita -->
+        {% if stats and stats[2] %}
+        <div class="appointment-card">
+          <div class="appointment-time">
+            <span class="time">{{ stats[2].split()[1][:5] }}</span>
+          </div>
+          <div class="appointment-details">
+            <div class="appointment-header">
+              <h3>Próxima cita</h3>
+              <span class="status-badge confirmed">Programada</span>
+            </div>
+            <p class="appointment-meta">
+              <i class="fas fa-calendar-day"></i> {{ stats[2].split()[0] }}
+            </p>
+            <p class="appointment-meta">
+              <i class="fas fa-user-md"></i> Psicólogo
+            </p>
+          </div>
+        </div>
+        {% endif %}
       </section>
 
       <!-- Upcoming Appointments -->
       <section class="upcoming-appointments">
         <div class="section-header">
-          </div>
-        
+          <h2>Próximas Citas</h2>
+        </div>
         
         <div class="appointments-list">
+          {% if stats and stats[2] %}
           <div class="appointment-card">
             <div class="appointment-time">
-              <span class="time">{{stats.2}}</span>
+              <span class="time">{{ stats[2].split()[1][:5] }}</span>
             </div>
             <div class="appointment-details">
               <div class="appointment-header">
                 <h3>Cita con Psicólogo</h3>
-                <span class="status-badge confirmed">{{stats.0}}</span>
+                <span class="status-badge confirmed">Programada</span>
               </div>
               <p class="appointment-meta">
-                <i class="fas fa-user-md"></i> Prof. Juan Moreno
+                <i class="fas fa-user-md"></i> Psicólogo
               </p>
               <p class="appointment-meta">
-                <i class="fas fa-map-marker-alt"></i> Pomaray
-              </p>
-              <div class="appointment-actions">
-                
-                
-              </div>
-            </div>
-          </div>
-          
-          <div class="appointment-card">
-            <div class="appointment-time">
-              <span class="time">02:30</span>
-              <span class="period">PM</span>
-            </div>
-            <div class="appointment-details">
-              <div class="appointment-header">
-                <h3>Psicologa</h3>
-                <span class="status-badge pending">Confirmada</span>
-              </div>
-              <p class="appointment-meta">
-                <i class="fas fa-chalkboard-teacher"></i> Psicologa
-              </p>
-              <p class="appointment-meta">
-                <i class="fas fa-map-marker-alt"></i> Pomaray
-              </p>
-              <div class="appointment-actions">
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Recent Activity -->
-      <section class="recent-activity">
-        <div class="section-header">
-          <h2>Actividad Reciente</h2>
-          <a href="#" class="view-all">Ver historial completo</a>
-        </div>
-        
-        <div class="activity-timeline">
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="activity-content">
-              <h3>Cita confirmada</h3>
-              <p class="activity-meta">
-                <span class="time">Hace 2 horas</span> • 
-                <span class="type">Psicología</span>
-              </p>
-              <p class="activity-detail">
-                Tu cita con la Dra. Pérez para el 15 de Junio a las 10:00 AM ha sido confirmada.
+                <i class="fas fa-map-marker-alt"></i> Ubicación
               </p>
             </div>
           </div>
-          
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-calendar-times"></i>
-            </div>
-            <div class="activity-content">
-              <p class="activity-detail">
-                
-              </p>
-            </div>
-          </div>
+          {% endif %}
         </div>
       </section>
     </main>
   </div>
-
-  <!-- Quick Action Button for Mobile -->
-  <button class="floating-action-btn" aria-label="Acción rápida">
-    <i class="fas fa-plus"></i>
-  </button>
 
   <script src="/static/js/mobile-menu.js"></script>
   <script src="/static/js/main.js"></script>
