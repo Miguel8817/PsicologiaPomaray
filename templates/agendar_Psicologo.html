@@ -42,6 +42,16 @@
 
             <a href="/Profesor_cita" class="link-alternativo">¿Quieres agendar una cita con un profesor?</a>
         
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %} 
+            
     </div>
 
     <script>

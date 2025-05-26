@@ -39,6 +39,16 @@
                 <div id="mensaje" class="mensaje" style="display:none;"></div>
                 <a href="/Psicologo_cita">¿Quieres agendar una cita para el psicólogo?</a>
             </form>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %} 
+            
         </div>
     </section>
 
