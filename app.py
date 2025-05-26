@@ -10,12 +10,15 @@ import re
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-app.config["ENV"] = os.getenv("FLASK_ENV", "production")  
+#Establecer el entorno de ejecución:
+app.config["ENV"] = os.getenv("FLASK_ENV", "production")
+#Habilitar/deshabilitar el modo debug:
 app.config["DEBUG"] = app.config["ENV"] == "development"
 
-# Reemplaza tu configuración actual con esta:
+
 # En la sección de configuración MySQL (reemplaza tu configuración actual)
 app.config['MYSQL_HOST'] = os.getenv('MYSQLHOST', 'gondola.proxy.rlwy.net')
+# os.getenv Gestionar configuraciones sensibles.
 app.config['MYSQL_USER'] = os.getenv('MYSQLUSER', 'root')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQLPASSWORD', 'FXdwHwarfhTstLawaFdkVodXPzxBHXLG')
 app.config['MYSQL_DB'] = os.getenv('MYSQLDATABASE', 'railway')
@@ -26,16 +29,19 @@ mysql = MySQL(app)
 
 # -------------------- RUTAS GENERALES --------------------
 
+#Index
 @app.route('/')
 def index():
     return render_template('index.html')
 
+#Cerrar sesion
 @app.route('/logout')
 def logout():
     session.clear()
     flash('Sesión cerrada correctamente', 'success')
     return redirect(url_for('iniciar_sesion'))
 
+#Registro
 @app.route('/record', methods=['GET', 'POST'])
 def record():
     if request.method == 'POST':
@@ -78,6 +84,7 @@ def record():
             cur.close()
     return render_template('registro.html')
 
+# Iniciar sesión
 @app.route('/login', methods=['GET', 'POST'])
 def iniciar_sesion():
     if request.method == 'POST':
@@ -136,12 +143,14 @@ def iniciar_sesion():
 
 # -------------------- ADMINISTRADOR --------------------
 
+
 @app.route('/admin')
 def admin():
     # Verificación mejorada de administrador
     if not session.get('is_admin') or not session.get('logged_in'):
         flash('Debes iniciar sesión como administrador para acceder a esta página', 'error')
         return redirect(url_for('iniciar_sesion'))
+    
 
 
         # Resto del código...
@@ -173,6 +182,44 @@ def admin():
         app.logger.error(f"Error en panel admin: {str(e)}")
         flash('Error al cargar el panel de administración', 'error')
         return redirect(url_for('index'))
+    
+    
+    
+@app.route('/GestionAdmin.html')
+def gestion_citas():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM cita_psicologo")
+    psicologo = cur.fetchall()
+    cur.close()
+    return render_template('GestionAdmin.html', psicologo=psicologo)
+
+
+@app.route('/cita/<int:id_cita>/estado', methods=['POST'])
+def actualizar_estado_cita(id_cita):
+    nuevo_estado = request.form.get('estado')
+
+    # Validar el estado recibido
+    estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
+    if nuevo_estado not in estados_validos:
+        flash('Estado inválido.', 'error')
+        return redirect(url_for('GestionCitas'))
+
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            UPDATE cita_psicologo 
+            SET estado = %s 
+            WHERE id_psicologo = %s
+        """, (nuevo_estado, id_cita))
+        mysql.connection.commit()
+        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash('Error al actualizar la cita.', 'error')
+    finally:
+        cursor.close()
+
+    return redirect(url_for('GestionAdmin'))
 
 # -------------------- USUARIOS CRUD --------------------
 
@@ -210,7 +257,7 @@ def usuario():
         return redirect(url_for('index'))
 
 
-
+#CRUD de usuarios
 @app.route('/CRUD')
 def CRUD():
     if 'email' not in session or not session.get('is_admin'):
@@ -227,6 +274,7 @@ def CRUD():
         flash('Error al cargar usuarios', 'error')
         return redirect(url_for('admin'))
 
+# Guardar usuario con validaciones mejoradas
 @app.route('/GUARDAR', methods=['POST'])
 def guardar():
     if not session.get('is_admin'):
@@ -285,6 +333,7 @@ def guardar():
 
     return redirect(url_for('CRUD'))
 
+# Eliminar usuario
 @app.route('/delete/<string:id>', methods=['POST'])
 def delete(id):
     cur = mysql.connection.cursor()
@@ -299,6 +348,7 @@ def delete(id):
         cur.close()
     return redirect(url_for('CRUD'))
 
+# Editar usuario con validaciones mejoradas
 @app.route('/editar/<string:id>', methods=['POST'])
 def editar(id):
     if 'email' not in session or not session.get('is_admin'):
@@ -325,11 +375,9 @@ def editar(id):
             # Actualizar datos
             if password:
                 hashed_password = generate_password_hash(password)
-                cur.execute('UPDATE user SET name = %s, email = %s, password = %s WHERE id = %s',
-                          (name, email, hashed_password, id))
+                cur.execute('UPDATE user SET name = %s, email = %s, password = %s WHERE id = %s',(name, email, hashed_password, id))
             else:
-                cur.execute('UPDATE user SET name = %s, email = %s WHERE id = %s',
-                          (name, email, id))
+                cur.execute('UPDATE user SET name = %s, email = %s WHERE id = %s',(name, email, id))
 
             mysql.connection.commit()
             return jsonify({'success': True, 'message': 'Usuario actualizado'})
@@ -379,6 +427,7 @@ def delete_cita(id):
         cursor.close()
     return redirect(url_for('gestion_citas'))
 
+#Editar cita psicólogo
 @app.route('/editar_cita/<int:id>', methods=['POST'])
 def editar_cita(id):
     fecha = request.form['FechaPS']
@@ -410,8 +459,7 @@ def agendar_psicologo():
         HoraPS = request.form['HoraPS']
         try:
             cur = mysql.connection.cursor()
-            cur.execute("INSERT INTO cita_psicologo (FechaPS, HoraPS, id) VALUES (%s, %s, %s)", 
-                       (FechaPS, HoraPS, user_id))
+            cur.execute("INSERT INTO cita_psicologo (FechaPS, HoraPS, id) VALUES (%s, %s, %s)", (FechaPS, HoraPS, user_id))
             mysql.connection.commit()
             flash('Cita agendada', 'success')
         except Exception as e:
@@ -446,8 +494,7 @@ def agendar_profesor():
         HoraPR = request.form['HoraPR']
         try:
             cur = mysql.connection.cursor()
-            cur.execute("INSERT INTO cita_profesor (FechaPR, HoraPR, id) VALUES (%s, %s, %s)", 
-                       (FechaPR, HoraPR, user_id))
+            cur.execute("INSERT INTO cita_profesor (FechaPR, HoraPR, id) VALUES (%s, %s, %s)", (FechaPR, HoraPR, user_id))
             mysql.connection.commit()
             flash('Cita agendada', 'success')
         except Exception as e:
@@ -511,6 +558,36 @@ def editar_cita_profesor(id):
         mysql.connection.rollback()
         flash(f'Error: {e}', 'error')
     return redirect(url_for('gestion_citas_profesor'))
+
+
+
+@app.route('/cita/<int:id_cita>/estado', methods=['POST'])
+def actualizar_estado_cita(id_cita):
+    nuevo_estado = request.form.get('estado')
+
+    # Validar el estado recibido
+    estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
+    if nuevo_estado not in estados_validos:
+        flash('Estado inválido.', 'error')
+        return redirect(url_for('GestionCitas'))
+
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            UPDATE cita_psicologo 
+            SET estado = %s 
+            WHERE id_psicologo = %s
+        """, (nuevo_estado, id_cita))
+        mysql.connection.commit()
+        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash('Error al actualizar la cita.', 'error')
+    finally:
+        cursor.close()
+
+    return redirect(url_for('GestionCitas'))
+
 
 # -------------------- INICIAR APLICACIÓN --------------------
 
