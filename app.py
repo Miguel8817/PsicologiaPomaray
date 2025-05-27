@@ -399,8 +399,8 @@ def actualizar_estado_cita_admin(id_cita):
     try:
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            UPDATE cita_psicologo 
-            SET estado = %s 
+            UPDATE cita_profesor 
+            SET estadoPr = %s 
             WHERE id = %s
         """, (nuevo_estado, id_cita))
         mysql.connection.commit()

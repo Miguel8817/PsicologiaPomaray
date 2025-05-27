@@ -321,3 +321,91 @@ form button {
 form button:hover {
     background-color: #0056b3;
 }
+
+/* Estilos adicionales para la tabla */
+.appointments-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.appointments-table th,
+.appointments-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+}
+
+.appointments-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+.appointments-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-table {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-edit-table {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-delete-table {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-status-table {
+    background-color: #2196F3;
+    color: white;
+}
+
+.table-icon {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.status-select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+}
+
+.status-form {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .appointments-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .appointments-table td {
+        min-width: 120px;
+    }
+}
