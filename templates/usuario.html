@@ -94,7 +94,7 @@
       <!-- Welcome Banner -->
       <section class="welcome-banner">
         <div class="welcome-content">
-          <h1>Bienvenido, <span>{{ users[1]|default('Padre') }}</span></h1>
+          <h1>Bienvenido, <span>{{ users.name|default('Padre') }}</span></h1>
           <p>Gestiona tus citas académicas y de bienestar en un solo lugar</p>
           <a href="/GestionCita" class="cta-button">
             <i class="fas fa-plus"></i> Agendar nueva cita
