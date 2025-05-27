@@ -61,7 +61,7 @@
                             </form>
                         </div>
 
-                        <form action="/cita" method="POST" style="display: inline;">
+                        <form action="/cita_admin/{{ cita.0 }}" method="POST" style="display: inline;">
                             <select name="estado">
                                 <option value="enviada" {% if cita.3 == 'enviada' %}selected{% endif %}>Enviada</option>
                                 <option value="aceptada" {% if cita.3 == 'aceptada' %}selected{% endif %}>Aceptada</option>
