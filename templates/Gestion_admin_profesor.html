@@ -62,9 +62,9 @@
                         </div>
                         <form action="/cita_admin_profesor/{{ cita.0 }}" method="POST" style="display: inline;">
                             <select name="estado">
-                                <option value="enviada" {% if cita.estado == 'enviada' %}selected{% endif %}>Enviada</option>
-                                <option value="aceptada" {% if cita.estado == 'aceptada' %}selected{% endif %}>Aceptada</option>
-                                <option value="rechazada" {% if cita.estado == 'rechazada' %}selected{% endif %}>Rechazada</option>
+                                <option value="enviada" {% if cita.3 == 'enviada' %}selected{% endif %}>Enviada</option>
+                                <option value="aceptada" {% if cita.3 == 'aceptada' %}selected{% endif %}>Aceptada</option>
+                                <option value="rechazada" {% if cita.3 == 'rechazada' %}selected{% endif %}>Rechazada</option>
                             </select>
                             <button type="submit">Cambiar</button>
                         </form>
@@ -108,7 +108,7 @@
             document.getElementById('editId').value = id;
             document.getElementById('editFecha').value = fecha;
             document.getElementById('editHora').value = hora;
-            document.getElementById('editForm').action = '/editar_cita/' + id;
+            document.getElementById('editForm').action = '/editar_admin/' + id;
             editModal.style.display = 'flex';
         }
 

@@ -18,11 +18,9 @@
         </header>
 
         <main class="app-content">
-            <!-- NUEVA CITA -->
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
                 <form action="/Guardar_cita_admin" method="POST" class="appointment-form">
-                    {{ csrf_token() }}
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
                         <input type="date" id="FechaPS" name="FechaPS" required>
@@ -37,7 +35,6 @@
                 </form>
             </section>
 
-            <!-- LISTADO DE CITAS -->
             <section class="appointments-list">
                 <h2><i class="fas fa-list-ul"></i> Mis Citas</h2>
                 <div class="appointments-container">
@@ -53,22 +50,18 @@
                                 <span>{{ cita.2 if cita.2 else '--:--' }}</span>
                             </div>
                         </div>
-
                         <div class="appointment-actions">
-                            <button class="btn-edit" type="button" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
+                            <button class="btn-edit" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <form action="/delete_admin/{{ cita.0 }}" method="POST" class="delete-form">
-                                {{ csrf_token() }}
                                 <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </div>
 
-                        <!-- CAMBIAR ESTADO -->
-                        <form action="/cita_admin/{{ cita.0 }}" method="POST" class="estado-form">
-                            {{ csrf_token() }}
+                        <form action="/cita_admin/{{ cita.0 }}" method="POST" style="display: inline;">
                             <select name="estado">
                                 <option value="enviada" {% if cita.3 == 'enviada' %}selected{% endif %}>Enviada</option>
                                 <option value="aceptada" {% if cita.3 == 'aceptada' %}selected{% endif %}>Aceptada</option>
@@ -82,17 +75,16 @@
             </section>
         </main>
 
-        <!-- MODAL DE EDICIÓN -->
+        <!-- Modal de Edición -->
         <div id="editModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3><i class="fas fa-edit"></i> Editar Cita</h3>
-                    <button class="close-modal" type="button" onclick="closeEditModal()">
+                    <button class="close-modal" onclick="closeEditModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" method="POST" class="appointment-form">
-                    {{ csrf_token() }}
+                <form id="editForm" action="/editar_admin" method="POST" class="appointment-form">
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
                         <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>
