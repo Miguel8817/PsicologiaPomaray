@@ -243,7 +243,7 @@ def actualizar_estado_citas(id):
         cursor.execute("""
             UPDATE cita_psicologo 
             SET estado = %s 
-            WHERE id_psicologo = %s
+            WHERE id = %s
         """, (nuevo_estado, id))
         mysql.connection.commit()
         flash(f'Estado actualizado a {nuevo_estado}.', 'success')
