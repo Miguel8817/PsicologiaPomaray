@@ -446,6 +446,7 @@ def usuario():
 
     try:
         with mysql.connection.cursor() as cursor:
+            # Obtener estadísticas
             cursor.execute("""
                 SELECT 
                     (SELECT COUNT(*) FROM user) AS total_usuarios,
@@ -457,15 +458,28 @@ def usuario():
             """)
             stats = cursor.fetchone()
 
+            # Obtener el usuario logueado
+            cursor.execute("""
+                SELECT id, name, lastName, email FROM user WHERE email = %s
+            """, (session['email'],))
+            usuario_actual = cursor.fetchone()
+
+            # Obtener últimos usuarios para lista (si es necesario)
             cursor.execute("""
                 SELECT id, name, lastName, email, created_at 
                 FROM user 
                 ORDER BY created_at DESC 
                 LIMIT 10
             """)
-            users = cursor.fetchall()
+            usuarios_lista = cursor.fetchall()
 
-        return render_template('usuario.html', users=users, stats=stats)
+        return render_template(
+            'usuario.html',
+            usuario=usuario_actual,
+            users=usuarios_lista,
+            stats=stats
+        )
+
     except Exception as e:
         app.logger.error(f"Error en panel usuario: {str(e)}")
         flash('Error al cargar el panel de usuario', 'error')
