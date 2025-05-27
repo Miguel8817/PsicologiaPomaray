@@ -311,3 +311,98 @@ body {
     background-color: #d1ecf1;
     color: #0c5460;
     border: 1px solid #bee5eb; }
+
+
+
+
+
+
+        * Estilos adicionales para las tablas */ .appointments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .appointments-table th,
+        .appointments-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+    
+        .appointments-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+    
+        .appointments-table tr:last-child td {
+            border-bottom: none;
+        }
+    
+        .appointments-table tr:hover {
+            background-color: #f9f9f9;
+        }
+    
+        .table-icon {
+            margin-right: 5px;
+            color: #555;
+        }
+    
+        .table-actions {
+            display: flex;
+            gap: 5px;
+        }
+    
+        .btn-table {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+    
+        .btn-edit-table {
+            background-color: #4CAF50;
+            color: white;
+        }
+    
+        .btn-delete-table {
+            background-color: #f44336;
+            color: white;
+        }
+    
+        .btn-table:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+    
+        .status-select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-right: 5px;
+        }
+    
+        .btn-status-table {
+            background-color: #2196F3;
+            color: white;
+        }
+    
+        @media (max-width: 768px) {
+            .appointments-table {
+                display: block;
+                overflow-x: auto;
+            }
+    
+            .table-actions {
+                flex-direction: column;
+            }
+        }
