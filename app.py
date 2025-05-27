@@ -386,7 +386,7 @@ def editar_profesor_admin(id):
         cursor.close()
     return redirect(url_for('gestion_profesorAdmin'))  # Corregido el nombre de la ruta
 
-@app.route('/cita_admin_profesor/<int:id_cita>/estado', methods=['POST'])
+@app.route('/cita_admin_profesor/<int:id>/estado', methods=['POST'])
 def actualizar_estado_cita_admin(id_cita):
     nuevo_estado = request.form.get('estado')
 
