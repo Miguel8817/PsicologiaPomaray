@@ -302,7 +302,7 @@ def editar_admin(id):
     return redirect(url_for('gestion_admin'))
 
 
-# -------------------- Admin profesor --------------------
+
 
 # -------------------- Admin profesor --------------------
 
