@@ -438,6 +438,7 @@ def actualizar_estado_cita_admin(id):
 
 # -------------------- USUARIOS CRUD --------------------
 
+
 @app.route('/usuarios')
 def usuario():
     if 'email' not in session:
@@ -445,7 +446,7 @@ def usuario():
         return redirect(url_for('iniciar_sesion'))
 
     try:
-        with mysql.connection.cursor() as cursor:
+        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
             # Obtener estadísticas
             cursor.execute("""
                 SELECT 
@@ -484,6 +485,7 @@ def usuario():
         app.logger.error(f"Error en panel usuario: {str(e)}")
         flash('Error al cargar el panel de usuario', 'error')
         return redirect(url_for('index'))
+
 
 
 #CRUD de usuarios
