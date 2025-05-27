@@ -5,26 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Citas Psicológicas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/GestionCitas.css">
+    <link rel="stylesheet" href="/static/css/GestionAdmin.css">
 </head>
 <body>
     <div class="mobile-container">
-        <!-- Encabezado -->
         <header class="app-header">
-            <button class="back-btn" onclick="window.location.href='/usuarios'" type="button" title="Volver">
+            <button class="back-btn" onclick="window.location.href='/admin'">
                 <i class="fas fa-arrow-left"></i>
             </button>
             <h1>Citas Psicólogo</h1>
             <div class="header-placeholder"></div>
         </header>
 
-        <!-- Contenido principal -->
         <main class="app-content">
-            <!-- Formulario para agregar nueva cita -->
             <section class="add-appointment">
                 <h2><i class="fas fa-plus-circle"></i> Nueva Cita</h2>
                 <form action="/Guardar_cita_admin" method="POST" class="appointment-form">
-                    {{ csrf_token() }}
                     <div class="form-group">
                         <label for="FechaPS"><i class="far fa-calendar-alt"></i> Fecha</label>
                         <input type="date" id="FechaPS" name="FechaPS" required>
@@ -39,7 +35,6 @@
                 </form>
             </section>
 
-            <!-- Lista de citas existentes -->
             <section class="appointments-list">
                 <h2><i class="fas fa-list-ul"></i> Mis Citas</h2>
                 <div class="appointments-container">
@@ -56,19 +51,24 @@
                             </div>
                         </div>
                         <div class="appointment-actions">
-                            <button class="btn-edit" type="button"
-                                onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')"
-                                title="Editar cita">
+                            <button class="btn-edit" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <form action="/delete_admin/{{ cita.0 }}" method="POST" class="delete-form">
-                                {{ csrf_token() }}
-                                <button type="submit" class="btn-delete"
-                                    onclick="return confirm('¿Eliminar esta cita?')" title="Eliminar cita">
+                                <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </div>
+
+                        <form action="/cita" method="POST" style="display: inline;">
+                            <select name="estado">
+                                <option value="enviada" {% if cita.3 == 'enviada' %}selected{% endif %}>Enviada</option>
+                                <option value="aceptada" {% if cita.3 == 'aceptada' %}selected{% endif %}>Aceptada</option>
+                                <option value="rechazada" {% if cita.3 == 'rechazada' %}selected{% endif %}>Rechazada</option>
+                            </select>
+                            <button type="submit">Cambiar</button>
+                        </form>
                     </div>
                     {% endfor %}
                 </div>
@@ -76,16 +76,15 @@
         </main>
 
         <!-- Modal de Edición -->
-        <div id="editModal" class="modal" style="display: none;">
+        <div id="editModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3><i class="fas fa-edit"></i> Editar Cita</h3>
-                    <button class="close-modal" type="button" onclick="closeEditModal()" title="Cerrar">
+                    <button class="close-modal" onclick="closeEditModal()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <form id="editForm" method="POST" class="appointment-form">
-                    {{ csrf_token() }}
+                <form id="editForm" action="/editar_admin" method="POST" class="appointment-form">
                     <input type="hidden" id="editId" name="id">
                     <div class="form-group">
                         <label for="editFecha"><i class="far fa-calendar-alt"></i> Fecha</label>
@@ -103,7 +102,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script>
         const editModal = document.getElementById('editModal');
 
@@ -111,7 +109,7 @@
             document.getElementById('editId').value = id;
             document.getElementById('editFecha').value = fecha;
             document.getElementById('editHora').value = hora;
-            document.getElementById('editForm').action = `/editar_admin/${id}`;
+            document.getElementById('editForm').action = '/editar_cita/' + id;
             editModal.style.display = 'flex';
         }
 
@@ -119,8 +117,8 @@
             editModal.style.display = 'none';
         }
 
-        window.onclick = function (event) {
-            if (event.target === editModal) {
+        window.onclick = function(event) {
+            if (event.target == editModal) {
                 closeEditModal();
             }
         }
