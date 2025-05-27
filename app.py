@@ -473,12 +473,13 @@ def usuario():
                 LIMIT 10
             """)
             usuarios_lista = cursor.fetchall()
-
+        print(usuario_actual)  # Verifica que contiene 'name' con el valor esperado
         return render_template(
             'usuario.html',
             usuario=usuario_actual,
             users=usuarios_lista,
             stats=stats
+            
         )
 
     except Exception as e:
