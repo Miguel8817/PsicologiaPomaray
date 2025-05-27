@@ -47,6 +47,7 @@
                                 <th><i class="far fa-calendar table-icon"></i> Fecha</th>
                                 <th><i class="far fa-clock table-icon"></i> Hora</th>
                                 <th>Acciones</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -54,6 +55,7 @@
                             <tr>
                                 <td>{{ cita.1 }}</td>
                                 <td>{{ cita.2 if cita.2 else '--:--' }}</td>
+                                <td>{{  cita.3  }}</td>
                                 <td class="table-actions">
                                     <button class="btn-table btn-edit-table" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
                                         <i class="fas fa-edit"></i> Editar

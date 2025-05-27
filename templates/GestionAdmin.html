@@ -6,6 +6,94 @@
     <title>Gestión de Citas Psicológicas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/GestionAdmin.css">
+    <style>
+        /* Estilos adicionales para la tabla */
+        .appointments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .appointments-table th, .appointments-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+        
+        .appointments-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .appointments-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-table {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-edit-table {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-delete-table {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-status-table {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .table-icon {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+        
+        .status-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+        
+        .status-form {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .appointments-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .appointments-table td {
+                min-width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="mobile-container">
@@ -36,43 +124,48 @@
             </section>
 
             <section class="appointments-list">
-                <h2><i class="fas fa-list-ul"></i> Mis Citas</h2>
+                <h2><i class="fas fa-list-ul"></i> Citas Registradas</h2>
                 <div class="appointments-container">
-                    {% for cita in citas %}
-                    <div class="appointment-card">
-                        <div class="appointment-info">
-                            <div class="appointment-date">
-                                <i class="far fa-calendar"></i>
-                                <span>{{ cita.1 }}</span>
-                            </div>
-                            <div class="appointment-time">
-                                <i class="far fa-clock"></i>
-                                <span>{{ cita.2 if cita.2 else '--:--' }}</span>
-                            </div>
-                        </div>
-                        <div class="appointment-actions">
-                            <button class="btn-edit" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form action="/delete_admin/{{ cita.0 }}" method="POST" class="delete-form">
-                                <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
-                        </div>
-
-                            
-                            <form action="/cita_admin/{{ cita.0 }}/estado" method="POST">
-                                <select name="estado">
-                                    <option value="Enviada" {% if cita.3 == 'Enviada' %}selected{% endif %}>Enviada</option>
-                                    <option value="Aceptada" {% if cita.3 == 'Aceptada' %}selected{% endif %}>Aceptada</option>
-                                    <option value="Rechazada" {% if cita.3 == 'Rechazada' %}selected{% endif %}>Rechazada</option>
-                                </select>
-                                <button type="submit">Cambiar</button>
-                        </form>
-
-                    </div>
-                    {% endfor %}
+                    <table class="appointments-table">
+                        <thead>
+                            <tr>
+                                <th><i class="far fa-calendar table-icon"></i> Fecha</th>
+                                <th><i class="far fa-clock table-icon"></i> Hora</th>
+                                <th><i class="fas fa-info-circle table-icon"></i> Estado</th>
+                                <th><i class="fas fa-cog table-icon"></i> Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cita in citas %}
+                            <tr>
+                                <td>{{ cita.1 }}</td>
+                                <td>{{ cita.2 if cita.2 else '--:--' }}</td>
+                                <td>
+                                    <form action="/cita_admin/{{ cita.0 }}/estado" method="POST" class="status-form">
+                                        <select name="estado" class="status-select">
+                                            <option value="Enviada" {% if cita.3 == 'Enviada' %}selected{% endif %}>Enviada</option>
+                                            <option value="Aceptada" {% if cita.3 == 'Aceptada' %}selected{% endif %}>Aceptada</option>
+                                            <option value="Rechazada" {% if cita.3 == 'Rechazada' %}selected{% endif %}>Rechazada</option>
+                                        </select>
+                                        <button type="submit" class="btn-table btn-status-table">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="table-actions">
+                                    <button class="btn-table btn-edit-table" onclick="openEditModal('{{ cita.0 }}', '{{ cita.1 }}', '{{ cita.2 }}')">
+                                        <i class="fas fa-edit table-icon"></i> Editar
+                                    </button>
+                                    <form action="/delete_admin/{{ cita.0 }}" method="POST" class="delete-form" style="display: inline;">
+                                        <button type="submit" class="btn-table btn-delete-table" onclick="return confirm('¿Eliminar esta cita?')">
+                                            <i class="fas fa-trash-alt table-icon"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>
@@ -102,16 +195,16 @@
                 </form>
             </div>
         </div>
+        
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="flash-messages">
             {% for category, message in messages %}
                 <div class="alert {{ category }}">{{ message }}</div>
-    {% endfor %}
+            {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
-
     </div>
 
     <script>
