@@ -443,16 +443,24 @@ def actualizar_estado_cita_admin(id):
 @app.route('/usuarios')
 def usuario():
     if 'email' not in session:
-        flash('Debes iniciar sesión', 'error')
+        flash('Debes iniciar sesión para acceder a esta página', 'error')
         return redirect(url_for('iniciar_sesion'))
 
     try:
-        # Obtener el nombre actualizado de la base de datos
         with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.execute("SELECT name FROM user WHERE email = %s", (session['email'],))
+            # Obtener datos del usuario actual
+            cursor.execute("""
+                SELECT name, lastName 
+                FROM user 
+                WHERE email = %s
+            """, (session['email'],))
             user_data = cursor.fetchone()
-            current_name = user_data['name'] if user_data else 'Usuario'
             
+            if not user_data:
+                flash('Usuario no encontrado', 'error')
+                return redirect(url_for('logout'))
+
+            # Obtener estadísticas
             cursor.execute("""
                 SELECT 
                     (SELECT COUNT(*) FROM user) AS total_usuarios,
@@ -464,6 +472,7 @@ def usuario():
             """)
             stats = cursor.fetchone()
 
+            # Obtener últimos usuarios registrados
             cursor.execute("""
                 SELECT id, name, lastName, email, created_at 
                 FROM user 
@@ -472,13 +481,18 @@ def usuario():
             """)
             users = cursor.fetchall()
 
-        return render_template('usuario.html', 
-                           users=users, 
-                           stats=stats,
-                           page_title='Panel de Usuarios',
-                           nombre_usuario=current_name)  # Pasar el nombre actualizado
+        nombre_completo = f"{user_data['name']}"
+        
+        return render_template(
+            'usuario.html',
+            users=users,
+            stats=stats,
+            nombre_usuario=nombre_completo,
+            page_title='Panel de Usuario'
+        )
+
     except Exception as e:
-        app.logger.error(f"Error en panel usuario: {str(e)}")
+        app.logger.error(f"Error en panel usuario: {str(e)}", exc_info=True)
         flash('Error al cargar el panel de usuario', 'error')
         return redirect(url_for('index'))
 
