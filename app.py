@@ -387,14 +387,14 @@ def editar_profesor_admin(id):
     return redirect(url_for('gestion_profesorAdmin'))  # Corregido el nombre de la ruta
 
 @app.route('/cita_admin_profesor/<int:id>/estado', methods=['POST'])
-def actualizar_estado_cita_admin(id_cita):
+def actualizar_estado_cita_admin(id):
     nuevo_estado = request.form.get('estado')
 
     # Validar el estado recibido
     estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
     if nuevo_estado not in estados_validos:
         flash('Estado inválido.', 'error')
-        return redirect(url_for('GestionCitas'))
+        return redirect(url_for('gestion_profesorAdmin'))
 
     try:
         cursor = mysql.connection.cursor()
@@ -402,7 +402,7 @@ def actualizar_estado_cita_admin(id_cita):
             UPDATE cita_profesor 
             SET estadoPr = %s 
             WHERE id = %s
-        """, (nuevo_estado, id_cita))
+        """, (nuevo_estado, id))
         mysql.connection.commit()
         flash(f'Estado actualizado a {nuevo_estado}.', 'success')
     except Exception as e:
