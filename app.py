@@ -189,9 +189,9 @@ def admin():
 def gestion_admin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_psicologo")
-    psicologo = cur.fetchall()
+    citas = cur.fetchall()
     cur.close()
-    return render_template('GestionAdmin.html', psicologo=psicologo)
+    return render_template('GestionAdmin.html', citas=citas)
 
 
 @app.route('/Psicologo_cita_admin', methods=['GET', 'POST'])
@@ -230,11 +230,11 @@ def agendar_psicologo_admin():
 
 @app.route('/cita_admin/<int:id>/estado', methods=['POST'])
 def actualizar_estado_citas(id):
-    nuevo_estado = request.form.get('estado')
+    estado = request.form.get('estado')
 
     # Validar el estado recibido
     estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
-    if nuevo_estado not in estados_validos:
+    if estado not in estados_validos:
         flash('Estado inválido.', 'error')
         return redirect(url_for('gestion_admin'))
 
@@ -244,9 +244,9 @@ def actualizar_estado_citas(id):
             UPDATE cita_psicologo 
             SET estado = %s 
             WHERE id = %s
-        """, (nuevo_estado, id))
+        """, (estado, id))
         mysql.connection.commit()
-        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
+        flash(f'Estado actualizado a {estado}.', 'success')
     except Exception as e:
         mysql.connection.rollback()
         flash('Error al actualizar la cita.', 'error')

@@ -61,14 +61,16 @@
                             </form>
                         </div>
 
-                        <form action="/cita_admin/{{ cita.0 }}" method="POST" style="display: inline;">
-                            <select name="estado">
-                                <option value="enviada" {% if cita.3 == 'enviada' %}selected{% endif %}>Enviada</option>
-                                <option value="aceptada" {% if cita.3 == 'aceptada' %}selected{% endif %}>Aceptada</option>
-                                <option value="rechazada" {% if cita.3 == 'rechazada' %}selected{% endif %}>Rechazada</option>
-                            </select>
-                            <button type="submit">Cambiar</button>
+                            
+                            <form action="/cita_admin/{{ cita.0 }}/estado" method="POST">
+                                <select name="estado">
+                                    <option value="Enviada" {% if cita.3 == 'Enviada' %}selected{% endif %}>Enviada</option>
+                                    <option value="Aceptada" {% if cita.3 == 'Aceptada' %}selected{% endif %}>Aceptada</option>
+                                    <option value="Rechazada" {% if cita.3 == 'Rechazada' %}selected{% endif %}>Rechazada</option>
+                                </select>
+                                <button type="submit">Cambiar</button>
                         </form>
+
                     </div>
                     {% endfor %}
                 </div>
