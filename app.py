@@ -439,36 +439,24 @@ def actualizar_estado_cita_admin(id):
 # -------------------- USUARIOS CRUD --------------------
 
 @app.route('/usuarios')
-def listar_usuarios():
-    """
-    Muestra el panel de usuarios con estadísticas y últimos usuarios registrados.
-    Verifica autenticación, obtiene datos de la base de datos y maneja errores.
-    """
-    # Verificación de sesión
+def usuario():
     if 'email' not in session:
-        flash('Debes iniciar sesión para acceder a esta página', 'error')
+        flash('Debes iniciar sesión', 'error')
         return redirect(url_for('iniciar_sesion'))
 
     try:
         with mysql.connection.cursor() as cursor:
-            # Consulta optimizada para obtener estadísticas
             cursor.execute("""
                 SELECT 
-                    COUNT(u.id) AS total_usuarios,
-                    COUNT(cp.id) AS citas_psicologo,
-                    COUNT(cpr.id) AS citas_profesor,
-                    SUM(CASE WHEN u.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) AS nuevos_usuarios,
-                    SUM(CASE WHEN cp.FechaPS >= CURDATE() THEN 1 ELSE 0 END) AS citas_hoy_psi,
-                    SUM(CASE WHEN cpr.FechaPR >= CURDATE() THEN 1 ELSE 0 END) AS citas_hoy_prof
-                FROM user u
-                LEFT JOIN cita_psicologo cp ON 1=1
-                LEFT JOIN cita_profesor cpr ON 1=1
-                GROUP BY 1=1
-                LIMIT 1
+                    (SELECT COUNT(*) FROM user) AS total_usuarios,
+                    (SELECT COUNT(*) FROM cita_psicologo) AS citas_psicologo,
+                    (SELECT COUNT(*) FROM cita_profesor) AS citas_profesor,
+                    (SELECT COUNT(*) FROM user WHERE created_at >= CURDATE() - INTERVAL 7 DAY) AS nuevos_usuarios,
+                    (SELECT COUNT(*) FROM cita_psicologo WHERE FechaPS >= CURDATE()) AS citas_hoy_psi,
+                    (SELECT COUNT(*) FROM cita_profesor WHERE FechaPR >= CURDATE()) AS citas_hoy_prof
             """)
             stats = cursor.fetchone()
 
-            # Consulta para obtener últimos usuarios registrados
             cursor.execute("""
                 SELECT id, name, lastName, email, created_at 
                 FROM user 
@@ -477,14 +465,10 @@ def listar_usuarios():
             """)
             users = cursor.fetchall()
 
-        return render_template('usuario.html', 
-                             users=users, 
-                             stats=stats,
-                             page_title='Panel de Usuarios')
-
+        return render_template('usuario.html', users=users, stats=stats)
     except Exception as e:
-        app.logger.error(f"Error en panel de usuarios: {str(e)}", exc_info=True)
-        flash('Ocurrió un error al cargar el panel de usuarios. Por favor intenta nuevamente.', 'error')
+        app.logger.error(f"Error en panel usuario: {str(e)}")
+        flash('Error al cargar el panel de usuario', 'error')
         return redirect(url_for('index'))
 
 
