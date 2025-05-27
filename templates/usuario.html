@@ -100,76 +100,46 @@
       <!-- Stats Overview -->
       <section class="stats-overview">
         <div class="section-header">
-          <h2>Resumen General</h2>
+          <h2>Resumen de Citas</h2>
         </div>
         
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon primary">
-              <i class="fas fa-users"></i>
+              <i class="fas fa-calendar-check"></i>
             </div>
             <div class="stat-info">
-              <h3>Total Usuarios</h3>
-              <p class="stat-value">{{ stats.total_usuarios }}</p>
+              <h3>Programadas</h3>
+              <p class="stat-value">{{stats.0 + stats.5}}</p>
               <p class="stat-change positive">
-                <i class="fas fa-user-plus"></i> {{ stats.nuevos_usuarios }} nuevos (7 días)
+                <i class="fas fa-arrow-up"></i> Hoy
               </p>
             </div>
           </div>
           
           <div class="stat-card">
             <div class="stat-icon success">
-              <i class="fas fa-brain"></i>
+              <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-info">
-              <h3>Citas Psicólogo</h3>
-              <p class="stat-value">{{ stats.citas_psicologo }}</p>
-              <p class="stat-change">
-                <i class="fas fa-calendar-day"></i> {{ stats.citas_hoy_psi }} hoy
+              <h3>Citas con Psicologos</h3>
+              <p class="stat-value">{{stats.0}}</p>
+              <p class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> {{stats.0}} Este mes
               </p>
             </div>
           </div>
           
           <div class="stat-card">
             <div class="stat-icon warning">
-              <i class="fas fa-chalkboard-teacher"></i>
+              <i class="fas fa-clock"></i>
             </div>
             <div class="stat-info">
-              <h3>Citas Profesor</h3>
-              <p class="stat-value">{{ stats.citas_profesor }}</p>
-              <p class="stat-change">
-                <i class="fas fa-calendar-day"></i> {{ stats.citas_hoy_prof }} hoy
-              </p>
+              <h3>Citas con profesores</h3>
+              <p class="stat-value">{{stats.5}}</p>
+              <p class="stat-detail">Hoy</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- Últimos Usuarios Registrados -->
-      <section class="recent-users">
-        <div class="section-header">
-          <h2>Últimos Usuarios Registrados</h2>
-        </div>
-        
-        <div class="users-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Fecha Registro</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for user in users %}
-              <tr>
-                <td>{{ user.name }} {{ user.lastName }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
         </div>
       </section>
 
@@ -183,12 +153,12 @@
         <div class="appointments-list">
           <div class="appointment-card">
             <div class="appointment-time">
-              <span class="time">{{ stats.citas_hoy_prof }}</span>
+              <span class="time">{{stats.2}}</span>
             </div>
             <div class="appointment-details">
               <div class="appointment-header">
                 <h3>Cita con Profesor</h3>
-                <span class="status-badge confirmed">Programada</span>
+                <span class="status-badge confirmed">{{stats.0}}</span>
               </div>
               <p class="appointment-meta">
                 <i class="fas fa-user-md"></i> Prof. Juan Moreno
@@ -201,15 +171,15 @@
           
           <div class="appointment-card">
             <div class="appointment-time">
-              <span class="time">{{ stats.citas_hoy_psi }}</span>
+              <span class="time">{{stats.2}}</span>
             </div>
             <div class="appointment-details">
               <div class="appointment-header">
-                <h3>Psicóloga</h3>
-                <span class="status-badge pending">Pendiente</span>
+                <h3>Psicologa</h3>
+                <span class="status-badge pending">{{stats.5}}</span>
               </div>
               <p class="appointment-meta">
-                <i class="fas fa-chalkboard-teacher"></i> Psic. María Barrios
+                <i class="fas fa-chalkboard-teacher"></i> Psc. Maria la de barrios
               </p>
               <p class="appointment-meta">
                 <i class="fas fa-map-marker-alt"></i> Pomaray
