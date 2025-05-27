@@ -228,15 +228,15 @@ def agendar_psicologo_admin():
     return render_template('agendar_Psicologo.html', citas=citas)
 
 
-@app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_citas(id_cita):
+@app.route('/cita_admin/<int:id>/estado', methods=['POST'])
+def actualizar_estado_citas(id):
     nuevo_estado = request.form.get('estado')
 
     # Validar el estado recibido
     estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
     if nuevo_estado not in estados_validos:
         flash('Estado inválido.', 'error')
-        return redirect(url_for('GestionCitas'))
+        return redirect(url_for('gestion_admin'))
 
     try:
         cursor = mysql.connection.cursor()
@@ -244,7 +244,7 @@ def actualizar_estado_citas(id_cita):
             UPDATE cita_psicologo 
             SET estado = %s 
             WHERE id_psicologo = %s
-        """, (nuevo_estado, id_cita))
+        """, (nuevo_estado, id))
         mysql.connection.commit()
         flash(f'Estado actualizado a {nuevo_estado}.', 'success')
     except Exception as e:
@@ -401,7 +401,7 @@ def actualizar_estado_cita_admin(id_cita):
         cursor.execute("""
             UPDATE cita_psicologo 
             SET estado = %s 
-            WHERE id_psicologo = %s
+            WHERE id = %s
         """, (nuevo_estado, id_cita))
         mysql.connection.commit()
         flash(f'Estado actualizado a {nuevo_estado}.', 'success')
