@@ -77,6 +77,7 @@ def record():
             mysql.connection.commit()
 
             session['email'] = email
+            session['name'] = name  # Guardar nombre en sesión
             flash('Registro exitoso.', 'success')
             return redirect(url_for('usuario'))
         except Exception as e:
@@ -105,7 +106,8 @@ def iniciar_sesion():
                     'logged_in': True,
                     'is_admin': True,
                     'email': email,
-                    'user_id': 0
+                    'user_id': 0,
+                    'name': 'Administrador'
                 })
                 flash('Bienvenido Administrador!', 'success')
                 return redirect(url_for('admin'))
@@ -115,7 +117,7 @@ def iniciar_sesion():
         cursor = None
         try:
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute("SELECT id, name, email, password FROM user WHERE email = %s", (email,))
+            cursor.execute("SELECT id, name, lastName, email, password FROM user WHERE email = %s", (email,))
             user = cursor.fetchone()
 
             if not user:
@@ -130,7 +132,7 @@ def iniciar_sesion():
                 'logged_in': True,
                 'user_id': user['id'],
                 'email': user['email'],
-                'name': user.get('name', '')
+                'name': user.get('name', 'Usuario')  # Guardar nombre en sesión
             })
             flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for('usuario'))
@@ -445,7 +447,12 @@ def usuario():
         return redirect(url_for('iniciar_sesion'))
 
     try:
-        with mysql.connection.cursor() as cursor:
+        # Obtener el nombre actualizado de la base de datos
+        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT name FROM user WHERE email = %s", (session['email'],))
+            user_data = cursor.fetchone()
+            current_name = user_data['name'] if user_data else 'Usuario'
+            
             cursor.execute("""
                 SELECT 
                     (SELECT COUNT(*) FROM user) AS total_usuarios,
@@ -465,7 +472,11 @@ def usuario():
             """)
             users = cursor.fetchall()
 
-        return render_template('usuario.html', users=users, stats=stats)
+        return render_template('usuario.html', 
+                           users=users, 
+                           stats=stats,
+                           page_title='Panel de Usuarios',
+                           nombre_usuario=current_name)  # Pasar el nombre actualizado
     except Exception as e:
         app.logger.error(f"Error en panel usuario: {str(e)}")
         flash('Error al cargar el panel de usuario', 'error')
