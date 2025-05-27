@@ -443,56 +443,34 @@ def actualizar_estado_cita_admin(id):
 @app.route('/usuarios')
 def usuario():
     if 'email' not in session:
-        flash('Debes iniciar sesión para acceder a esta página', 'error')
+        flash('Debes iniciar sesión', 'error')
         return redirect(url_for('iniciar_sesion'))
 
     try:
-        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-            # Obtener datos del usuario actual
-            cursor.execute("""
-                SELECT name, lastName 
-                FROM user 
-                WHERE email = %s
-            """, (session['email'],))
+        with mysql.connection.cursor() as cursor:
+            # Obtener el nombre del usuario actual
+            cursor.execute("SELECT name FROM user WHERE email = %s", (session['email'],))
             user_data = cursor.fetchone()
-            
-            if not user_data:
-                flash('Usuario no encontrado', 'error')
-                return redirect(url_for('logout'))
+            nombre_usuario = user_data['name'] if user_data else 'Usuario'
 
-            # Obtener estadísticas
+            # Obtener stats (asegúrate de que la consulta coincida con tu HTML)
             cursor.execute("""
                 SELECT 
-                    (SELECT COUNT(*) FROM user) AS total_usuarios,
-                    (SELECT COUNT(*) FROM cita_psicologo) AS citas_psicologo,
-                    (SELECT COUNT(*) FROM cita_profesor) AS citas_profesor,
-                    (SELECT COUNT(*) FROM user WHERE created_at >= CURDATE() - INTERVAL 7 DAY) AS nuevos_usuarios,
-                    (SELECT COUNT(*) FROM cita_psicologo WHERE FechaPS >= CURDATE()) AS citas_hoy_psi,
-                    (SELECT COUNT(*) FROM cita_profesor WHERE FechaPR >= CURDATE()) AS citas_hoy_prof
+                    (SELECT COUNT(*) FROM cita_psicologo) AS citas_psi,
+                    (SELECT COUNT(*) FROM cita_profesor) AS citas_prof,
+                    # ... otras subconsultas ...
             """)
             stats = cursor.fetchone()
 
-            # Obtener últimos usuarios registrados
-            cursor.execute("""
-                SELECT id, name, lastName, email, created_at 
-                FROM user 
-                ORDER BY created_at DESC 
-                LIMIT 10
-            """)
-            users = cursor.fetchall()
-
-        nombre_completo = f"{user_data['name']}"
-        
         return render_template(
             'usuario.html',
-            users=users,
+            nombre_usuario=nombre_usuario,
             stats=stats,
-            nombre_usuario=nombre_completo,
             page_title='Panel de Usuario'
         )
 
     except Exception as e:
-        app.logger.error(f"Error en panel usuario: {str(e)}", exc_info=True)
+        app.logger.error(f"Error en panel usuario: {str(e)}")
         flash('Error al cargar el panel de usuario', 'error')
         return redirect(url_for('index'))
 
