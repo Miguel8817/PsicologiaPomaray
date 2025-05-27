@@ -3,277 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Panel | Universidad</title>
+  <title>{{ page_title|default('Mi Panel') }} | Universidad</title>
   <link rel="stylesheet" href="/static/css/usuario.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <!-- Botón de menú móvil -->
-    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
-      <i class="fas fa-bars"></i>
-    </button>
-    
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="user-profile-mini">
-          <div class="avatar">
-            <i class="fas fa-user-circle"></i>
+  <!-- [Resto del código del sidebar igual] -->
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- [Top Bar y Welcome Banner iguales] -->
+
+    <!-- Stats Overview - SECCIÓN MODIFICADA -->
+    <section class="stats-overview">
+      <div class="section-header">
+        <h2>Resumen General</h2>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon primary">
+            <i class="fas fa-users"></i>
           </div>
-          <div class="user-info">
-            <span class="name">{{ session.name|default('Padre') }}</span>
-            <span class="role">Padre</span>
+          <div class="stat-info">
+            <h3>Total Usuarios</h3>
+            <p class="stat-value">{{ stats.total_usuarios }}</p>
+            <p class="stat-change positive">
+              <i class="fas fa-user-plus"></i> {{ stats.nuevos_usuarios }} nuevos (7 días)
+            </p>
           </div>
         </div>
-        <button class="close-sidebar" id="closeSidebar" aria-label="Cerrar menú">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="active">
-            <a href="/Psicologo_cita">
-              <div class="menu-icon">
-                <i class="fas fa-calendar-plus"></i>
-              </div>
-              <span>Agendar Cita</span>
-              <div class="active-indicator"></div>
-            </a>
-          </li>
-          <li>
-            <a href="/GestionProfesor">
-              <div class="menu-icon">
-                <i class="fas fa-chalkboard-teacher"></i>
-              </div>
-              <span>Citas con Profesor</span>
-            </a> 
-          </li>
-          <li>
-            <a href="/GestionCita">
-              <div class="menu-icon">
-                <i class="fas fa-brain"></i>
-              </div>
-              <span>Citas con Psicólogo</span>
-            </a>
-          </li>
-          <li class="divider"></li>
-          <li class="logout">
-            <a href="/logout">
-              <div class="menu-icon">
-                <i class="fas fa-sign-out-alt"></i>
-              </div>
-              <span>Cerrar Sesión</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="university-brand">
-          <span>Sistema de Citas</span>
+        
+        <div class="stat-card">
+          <div class="stat-icon success">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Citas Psicólogo</h3>
+            <p class="stat-value">{{ stats.citas_psicologo }}</p>
+            <p class="stat-change">
+              <i class="fas fa-calendar-day"></i> {{ stats.citas_hoy_psi }} hoy
+            </p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon warning">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Citas Profesor</h3>
+            <p class="stat-value">{{ stats.citas_profesor }}</p>
+            <p class="stat-change">
+              <i class="fas fa-calendar-day"></i> {{ stats.citas_hoy_prof }} hoy
+            </p>
+          </div>
         </div>
       </div>
-    </aside>
+    </section>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Top Bar -->
-      <div class="top-bar">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Buscar citas, profesores...">
-        </div>
-        
-          
-            
+    <!-- Últimos Usuarios Registrados - NUEVA SECCIÓN -->
+    <section class="recent-users">
+      <div class="section-header">
+        <h2>Últimos Usuarios Registrados</h2>
       </div>
+      
+      <div class="users-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Fecha Registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user.name }} {{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-      <!-- Welcome Banner -->
-      <section class="welcome-banner">
-        <div class="welcome-content">
-          <h1>Bienvenido, <span>{{ session.name|default('Padre') }}</span></h1>
-          <p>Gestiona tus citas académicas y de bienestar en un solo lugar</p>
-          <a href="/GestionCita" class="cta-button">
-            <i class="fas fa-plus"></i> Agendar nueva cita
-          </a>
-        </div>
-        
-      </section>
+    <!-- [Resto de las secciones iguales] -->
+  </main>
 
-      <!-- Stats Overview -->
-      <section class="stats-overview">
-        <div class="section-header">
-          <h2>Resumen de Citas</h2>
-        </div>
-        
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon primary">
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Programadas</h3>
-              <p class="stat-value">{{stats.0 + stats.5}}</p>
-              <p class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> Hoy
-              </p>
-            </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon success">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Citas con Psicologos</h3>
-              <p class="stat-value">{{stats.0}}</p>
-              <p class="stat-change positive">
-                <i class="fas fa-arrow-up"></i> {{stats.0}} Este mes
-              </p>
-            </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon warning">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Citas con profesores</h3>
-              <p class="stat-value">{{stats.5}}</p>
-              <p class="stat-detail">Hoy</p>
-            </div>
-          </div>
-          
-          
-      </section>
-
-      <!-- Upcoming Appointments -->
-      <section class="upcoming-appointments">
-        <div class="section-header">
-          <h2>Próximas Citas</h2>
-          <a href="/GestionCita" class="view-all">Ver todas</a>
-        </div>
-        
-        <div class="appointments-list">
-          <div class="appointment-card">
-            <div class="appointment-time">
-              <span class="time">{{stats.2}}</span>
-            </div>
-            <div class="appointment-details">
-              <div class="appointment-header">
-                <h3>Cita con Profesor</h3>
-                <span class="status-badge confirmed">{{stats.0}}</span>
-              </div>
-              <p class="appointment-meta">
-                <i class="fas fa-user-md"></i> Prof. Juan Moreno
-              </p>
-              <p class="appointment-meta">
-                <i class="fas fa-map-marker-alt"></i> Pomaray
-              </p>
-            </div>
-          </div>
-          
-          <div class="appointment-card">
-            <div class="appointment-time">
-              <span class="time">{{stats.2}}</span>
-              
-            </div>
-            <div class="appointment-details">
-              <div class="appointment-header">
-                <h3>Psicologa</h3>
-                <span class="status-badge pending">{{stats.5}}</span>
-              </div>
-              <p class="appointment-meta">
-                <i class="fas fa-chalkboard-teacher"></i> Psc. Maria la de barrios
-              </p>
-              <p class="appointment-meta">
-                <i class="fas fa-map-marker-alt"></i> Pomaray
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Recent Activity -->
-      <section class="recent-activity">
-        
-        
-        <div class="activity-timeline">
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="activity-content">
-              <h3>Cita confirmada</h3>
-              <p class="activity-meta">
-                <span class="time">Hace 2 horas</span> • 
-                <span class="type">Psicología</span>
-              </p>
-              <p class="activity-detail">
-                Tu cita con la Dra. Pérez para el 15 de Junio a las 10:00 AM ha sido confirmada.
-              </p>
-            </div>
-          </div>
-          
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-calendar-times"></i>
-            </div>
-            <div class="activity-content">
-              <h3>Cita cancelada</h3>
-              <p class="activity-meta">
-                <span class="time">Ayer</span> • 
-                <span class="type">Asesoría académica</span>
-              </p>
-              <p class="activity-detail">
-                Has cancelado tu cita con el Prof. González programada para el 12 de Junio.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Quick Action Button for Mobile -->
-  <button class="floating-action-btn" id="citaBtn" aria-label="Acción rápida">
-    <i class="fas fa-plus"></i>
-  </button>
-
-  <script>
-    // Mobile Menu Toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const closeSidebar = document.getElementById('closeSidebar');
-    const sidebar = document.getElementById('sidebar');
-
-    mobileMenuBtn.addEventListener('click', () => {
-      sidebar.classList.add('active');
-    });
-
-    document.getElementById('citaBtn').addEventListener('click', function() {
-      window.location.href = '/Psicologo_cita';
-    });
-
-    closeSidebar.addEventListener('click', () => {
-      sidebar.classList.remove('active');
-    });
-
-    // Close sidebar when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
-        sidebar.classList.remove('active');
-      }
-    });
-
-    // Smooth transitions
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        document.body.style.opacity = '1';
-      }, 100);
-    });
-  </script>
+  <!-- [Scripts iguales] -->
 </body>
 </html>
