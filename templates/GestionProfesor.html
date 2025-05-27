@@ -6,6 +6,9 @@
     <title>Citas con Profesores</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/GestionProfesor.css">
+    <style>
+        
+    </style>
 </head>
 <body>
     <div class="mobile-container">
@@ -38,30 +41,43 @@
             <section class="appointments-list">
                 <h2><i class="fas fa-list-ul"></i> Mis Citas</h2>
                 <div class="appointments-container">
-                    {% for citas in profesor %}
-                    <div class="appointment-card">
-                        <div class="appointment-info">
-                            <div class="appointment-date">
-                                <i class="far fa-calendar"></i>
-                                <span>{{ citas.1 }}</span>
-                            </div>
-                            <div class="appointment-time">
-                                <i class="far fa-clock"></i>
-                                <span>{{ citas.2 if citas.2 else '--:--' }}</span>
-                            </div>
-                        </div>
-                        <div class="appointment-actions">
-                            <button class="btn-edit" onclick="openEditModal('{{ citas.0 }}', '{{ citas.1 }}', '{{ citas.2 }}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form action="/Delete_cita_profesor/{{ citas.0 }}" method="POST" class="delete-form">
-                                <button type="submit" class="btn-delete" onclick="return confirm('¿Eliminar esta cita?')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    {% endfor %}
+                    <table class="appointments-table">
+                        <thead>
+                            <tr>
+                                <th><i class="far fa-calendar table-icon"></i> Fecha</th>
+                                <th><i class="far fa-clock table-icon"></i> Hora</th>
+                                <th><i class="fas fa-info-circle table-icon"></i> Estado</th>
+                                <th><i class="fas fa-cog table-icon"></i> Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for citas in profesor %}
+                            <tr>
+                                <td>{{ citas.1 }}</td>
+                                <td>{{ citas.2 if citas.2 else '--:--' }}</td>
+                                <td>
+                                    {% if citas.3 %}
+                                        <span class="status-badge {{ 'status-accepted' if citas.3 == 'Aceptada' else 'status-pending' if citas.3 == 'Enviada' else 'status-rejected' }}">
+                                            {{ citas.3 }}
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge status-pending">Pendiente</span>
+                                    {% endif %}
+                                </td>
+                                <td class="table-actions">
+                                    <button class="btn-table btn-edit-table" onclick="openEditModal('{{ citas.0 }}', '{{ citas.1 }}', '{{ citas.2 }}')">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <form action="/Delete_cita_profesor/{{ citas.0 }}" method="POST" class="delete-form" style="display: inline;">
+                                        <button type="submit" class="btn-table btn-delete-table" onclick="return confirm('¿Eliminar esta cita?')">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>

@@ -189,30 +189,64 @@ def admin():
 def gestion_admin():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM cita_psicologo")
-    psicologo = cur.fetchall()
+    citas = cur.fetchall()
     cur.close()
-    return render_template('GestionAdmin.html', psicologo=psicologo)
+    return render_template('GestionAdmin.html', citas=citas)
 
 
-@app.route('/cita_admin/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_citas(id_cita):
-    nuevo_estado = request.form.get('estado')
+@app.route('/Psicologo_cita_admin', methods=['GET', 'POST'])
+def agendar_psicologo_admin():
+    if 'email' not in session:
+        flash('Debes iniciar sesión', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT id FROM user WHERE email = %s", (session['email'],))
+    user = cur.fetchone()
+    user_id = user['id']
+    cur.close()
+
+    if request.method == 'POST':
+        FechaPS = request.form['FechaPS']
+        HoraPS = request.form['HoraPS']
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO cita_psicologo (FechaPS, HoraPS, id) VALUES (%s, %s, %s)", (FechaPS, HoraPS, user_id))
+            mysql.connection.commit()
+            flash('Cita agendada', 'success')
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Error: {e}', 'error')
+        finally:
+            cur.close()
+        return redirect(url_for('agendar_psicologo'))
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM cita_psicologo WHERE id = %s", (user_id,))
+    citas = cur.fetchall()
+    cur.close()
+    return render_template('agendar_Psicologo.html', citas=citas)
+
+
+@app.route('/cita_admin/<int:id>/estado', methods=['POST'])
+def actualizar_estado_citas(id):
+    estado = request.form.get('estado')
 
     # Validar el estado recibido
     estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
-    if nuevo_estado not in estados_validos:
+    if estado not in estados_validos:
         flash('Estado inválido.', 'error')
-        return redirect(url_for('GestionCitas'))
+        return redirect(url_for('gestion_admin'))
 
     try:
         cursor = mysql.connection.cursor()
         cursor.execute("""
             UPDATE cita_psicologo 
             SET estado = %s 
-            WHERE id_psicologo = %s
-        """, (nuevo_estado, id_cita))
+            WHERE id = %s
+        """, (estado, id))
         mysql.connection.commit()
-        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
+        flash(f'Estado actualizado a {estado}.', 'success')
     except Exception as e:
         mysql.connection.rollback()
         flash('Error al actualizar la cita.', 'error')
@@ -268,85 +302,130 @@ def editar_admin(id):
     return redirect(url_for('gestion_admin'))
 
 
+
+
+# -------------------- Admin profesor --------------------
+
 # -------------------- Admin profesor --------------------
 
 @app.route('/Gestion_profesor_admin')
-def gestion_profesorAdmin():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM cita_profesor")
-    profesor = cur.fetchall()
-    cur.close()
-    return render_template('Gestion_admin_profesor.html', profesor=profesor)
+def gestion_profesor_admin():  # Nombre de función más consistente
+    if not session.get('is_admin') or not session.get('logged_in'):
+        flash('Debes iniciar sesión como administrador para acceder a esta página', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
+    try:
+        with mysql.connection.cursor() as cur:
+            cur.execute("SELECT * FROM cita_profesor ORDER BY FechaPR DESC, HoraPR DESC")
+            profesores = cur.fetchall()
+        return render_template('Gestion_admin_profesor.html', profesores=profesores)
+    except Exception as e:
+        flash(f'Error al cargar citas: {str(e)}', 'error')
+        return redirect(url_for('admin'))
 
 @app.route('/Guardar_profesor_admin', methods=['POST'])
 def guardar_profesor_admin():
-    FechaPR = request.form['FechaPR']
-    HoraPR = request.form['HoraPR']
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
+    FechaPR = request.form.get('FechaPR')
+    HoraPR = request.form.get('HoraPR')
+    
+    # Validación de campos
+    if not FechaPR or not HoraPR:
+        flash('Fecha y hora son obligatorias', 'error')
+        return redirect(url_for('gestion_profesor_admin'))
+    
     try:
+        # Validación de formato de fecha y hora
         datetime.strptime(FechaPR, '%Y-%m-%d')
         datetime.strptime(HoraPR, '%H:%M')
-        cursor = mysql.connection.cursor()
-        cursor.execute("INSERT INTO cita_profesor (FechaPR, HoraPR) VALUES (%s, %s)", (FechaPR, HoraPR))
-        mysql.connection.commit()
-        flash('Cita guardada', 'success')
+        
+        with mysql.connection.cursor() as cursor:
+            cursor.execute("INSERT INTO cita_profesor (FechaPR, HoraPR, estadoPr) VALUES (%s, %s, 'Enviada')", 
+                          (FechaPR, HoraPR))
+            mysql.connection.commit()
+            flash('Cita guardada correctamente', 'success')
+    except ValueError:
+        flash('Formato de fecha u hora incorrecto', 'error')
     except Exception as e:
         mysql.connection.rollback()
-        flash(f'Error: {e}', 'error')
-    return redirect(url_for('gestion_admin_profesor'))
+        flash(f'Error al guardar cita: {str(e)}', 'error')
+    
+    return redirect(url_for('gestion_profesor_admin'))
 
 @app.route('/Delete_profesor_admin/<int:id>', methods=['POST'])
 def delete_profesor_admin(id):
-    cursor = mysql.connection.cursor()
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
     try:
-        cursor.execute("DELETE FROM cita_profesor WHERE id = %s", (id,))
-        mysql.connection.commit()
-        flash('Cita eliminada', 'success')
+        with mysql.connection.cursor() as cursor:
+            cursor.execute("DELETE FROM cita_profesor WHERE id = %s", (id,))
+            mysql.connection.commit()
+            flash('Cita eliminada correctamente', 'success')
     except Exception as e:
         mysql.connection.rollback()
-        flash(f'Error: {e}', 'error')
-    finally:
-        cursor.close()
-    return redirect(url_for('gestion_admin_profesor'))
+        flash(f'Error al eliminar cita: {str(e)}', 'error')
+    
+    return redirect(url_for('gestion_profesor_admin'))
 
 @app.route('/Editar_profesor_admin/<int:id>', methods=['POST'])
 def editar_profesor_admin(id):
-    FechaPR = request.form['FechaPR']
-    HoraPR = request.form['HoraPR']
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
+    FechaPR = request.form.get('FechaPR')
+    HoraPR = request.form.get('HoraPR')
+    
+    if not FechaPR or not HoraPR:
+        flash('Fecha y hora son obligatorias', 'error')
+        return redirect(url_for('gestion_profesor_admin'))
+    
     try:
-        cursor = mysql.connection.cursor()
-        cursor.execute("UPDATE cita_profesor SET FechaPR = %s, HoraPR = %s WHERE id = %s", 
-                       (FechaPR, HoraPR, id))
-        mysql.connection.commit()
-        flash('Cita editada', 'success')
+        datetime.strptime(FechaPR, '%Y-%m-%d')
+        datetime.strptime(HoraPR, '%H:%M')
+        
+        with mysql.connection.cursor() as cursor:
+            cursor.execute("UPDATE cita_profesor SET FechaPR = %s, HoraPR = %s WHERE id = %s", 
+                         (FechaPR, HoraPR, id))
+            mysql.connection.commit()
+            flash('Cita actualizada correctamente', 'success')
+    except ValueError:
+        flash('Formato de fecha u hora incorrecto', 'error')
     except Exception as e:
         mysql.connection.rollback()
-        flash(f'Error: {e}', 'error')
-    return redirect(url_for('gestion_admin_profesor'))
+        flash(f'Error al actualizar cita: {str(e)}', 'error')
+    
+    return redirect(url_for('gestion_profesor_admin'))
 
-@app.route('/cita_admin_profesor/<int:id_cita>/estado', methods=['POST'])
-def actualizar_estado_cita_admin(id_cita):
+@app.route('/cita_admin_profesor/<int:id>/estado', methods=['POST'])
+def actualizar_estado_cita_admin(id):
+    if not session.get('is_admin'):
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('iniciar_sesion'))
+
     nuevo_estado = request.form.get('estado')
-
-    # Validar el estado recibido
     estados_validos = ['Enviada', 'Aceptada', 'Rechazada']
+    
     if nuevo_estado not in estados_validos:
-        flash('Estado inválido.', 'error')
-        return redirect(url_for('GestionCitas'))
+        flash('Estado inválido', 'error')
+        return redirect(url_for('gestion_profesor_admin'))
 
     try:
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            UPDATE cita_psicologo 
-            SET estado = %s 
-            WHERE id_psicologo = %s
-        """, (nuevo_estado, id_cita))
-        mysql.connection.commit()
-        flash(f'Estado actualizado a {nuevo_estado}.', 'success')
+        with mysql.connection.cursor() as cursor:
+            cursor.execute("UPDATE cita_profesor SET estadoPr = %s WHERE id = %s", 
+                          (nuevo_estado, id))
+            mysql.connection.commit()
+            flash(f'Estado actualizado a {nuevo_estado}', 'success')
     except Exception as e:
         mysql.connection.rollback()
-        flash('Error al actualizar la cita.', 'error')
-    finally:
-        cursor.close()
+        flash(f'Error al actualizar estado: {str(e)}', 'error')
+    
+    return redirect(url_for('gestion_profesor_admin'))
 
 
 
