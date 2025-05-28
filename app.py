@@ -77,7 +77,6 @@ def record():
             mysql.connection.commit()
 
             session['email'] = email
-            session['name'] = name  # Guardar nombre en sesión
             flash('Registro exitoso.', 'success')
             return redirect(url_for('usuario'))
         except Exception as e:
@@ -106,8 +105,7 @@ def iniciar_sesion():
                     'logged_in': True,
                     'is_admin': True,
                     'email': email,
-                    'user_id': 0,
-                    'name': 'Administrador'
+                    'user_id': 0
                 })
                 flash('Bienvenido Administrador!', 'success')
                 return redirect(url_for('admin'))
@@ -117,7 +115,7 @@ def iniciar_sesion():
         cursor = None
         try:
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute("SELECT id, name, lastName, email, password FROM user WHERE email = %s", (email,))
+            cursor.execute("SELECT id, name, email, password FROM user WHERE email = %s", (email,))
             user = cursor.fetchone()
 
             if not user:
@@ -132,7 +130,7 @@ def iniciar_sesion():
                 'logged_in': True,
                 'user_id': user['id'],
                 'email': user['email'],
-                'name': user.get('name', 'Usuario')  # Guardar nombre en sesión
+                'name': user.get('name', '')
             })
             flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for('usuario'))
@@ -448,27 +446,26 @@ def usuario():
 
     try:
         with mysql.connection.cursor() as cursor:
-            # Obtener el nombre del usuario actual
-            cursor.execute("SELECT name FROM user WHERE email = %s", (session['email'],))
-            user_data = cursor.fetchone()
-            nombre_usuario = user_data['name'] if user_data else 'Usuario'
-
-            # Obtener stats (asegúrate de que la consulta coincida con tu HTML)
             cursor.execute("""
                 SELECT 
-                    (SELECT COUNT(*) FROM cita_psicologo) AS citas_psi,
-                    (SELECT COUNT(*) FROM cita_profesor) AS citas_prof,
-                    # ... otras subconsultas ...
+                    (SELECT COUNT(*) FROM user) AS total_usuarios,
+                    (SELECT COUNT(*) FROM cita_psicologo) AS citas_psicologo,
+                    (SELECT COUNT(*) FROM cita_profesor) AS citas_profesor,
+                    (SELECT COUNT(*) FROM user WHERE created_at >= CURDATE() - INTERVAL 7 DAY) AS nuevos_usuarios,
+                    (SELECT COUNT(*) FROM cita_psicologo WHERE FechaPS >= CURDATE()) AS citas_hoy_psi,
+                    (SELECT COUNT(*) FROM cita_profesor WHERE FechaPR >= CURDATE()) AS citas_hoy_prof
             """)
             stats = cursor.fetchone()
 
-        return render_template(
-            'usuario.html',
-            nombre_usuario=nombre_usuario,
-            stats=stats,
-            page_title='Panel de Usuario'
-        )
+            cursor.execute("""
+                SELECT id, name, lastName, email, created_at 
+                FROM user 
+                ORDER BY created_at DESC 
+                LIMIT 10
+            """)
+            users = cursor.fetchall()
 
+        return render_template('usuario.html', users=users, stats=stats)
     except Exception as e:
         app.logger.error(f"Error en panel usuario: {str(e)}")
         flash('Error al cargar el panel de usuario', 'error')
