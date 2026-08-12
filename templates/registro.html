@@ -6,7 +6,6 @@
     <title>Acceder - Departamento de Psicología</title>
     <link rel="stylesheet" href="/static/css/registr.css">
     <link rel="icon" href="/static/imagenes/logo.png">
-    <script src="/static/js/registro.js"></script>
 </head>
 <body>
 
@@ -14,8 +13,7 @@
     <div id="form-registro" class="formulario">
         <h2>Registrarse</h2>
         <form action="/record" method="POST" onsubmit="return validarFormulario()">
-            <input type="text" placeholder="Nombre" id="nombre" name="name" required>
-            <input type="text" placeholder="Apellido" id="apellido" name="lastName" required>
+            <input type="text" placeholder="Nombre completo" id="nombre" name="name" required>
             <input type="email" placeholder="Correo electrónico" id="correo" name="email" required>
             <input type="password" placeholder="Contraseña" id="contraseña" name="password" required minlength="8">
             <input type="password" placeholder="Confirmar Contraseña" id="confirmarContraseña" name="confirmar_password" required>

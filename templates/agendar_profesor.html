@@ -20,6 +20,7 @@
         <div class="formulario">
             <h2>Agendar Cita con Profesor</h2>
             
+            <form id="form-cita" action="/Guardar_cita_profesor" method="POST">
                 <label for="profesor">Seleccionar Profesor:</label>
                 <select id="profesor" name="profesor" required>
                     <option value="">-- Seleccionar --</option>
@@ -27,8 +28,7 @@
                     <option value="Dra. Ana Martínez">Dra. Ana Martínez</option>
                     <option value="Lic. Laura Gómez">Lic. Laura Gómez</option>
                 </select>
-                
-            <form id="form-cita" action="/Profesor_cita" method="POST">
+
                 <label for="fecha">Fecha:</label>
                 <input type="date" id="fecha" name="FechaPR" required>
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const formData = new FormData(form);
-            const response = await fetch('/Profesor_cita',  {
+            const response = await fetch('/Guardar_cita_profesor',  {
                 method: 'POST',
                 body: formData
             });

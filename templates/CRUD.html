@@ -149,31 +149,10 @@
             editModal.hide()
         }
 
-        // Envío del formulario de edición con fetch
+        // Envío del formulario de edición - submit directo al backend
         document.getElementById('editForm').addEventListener('submit', function(e) {
-            e.preventDefault()
-            
-            const formData = new FormData(this)
-            const id = document.getElementById('editId').value
-            
-            fetch(`/editar/${id}`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    alert('Cambios guardados correctamente')
-                    closeEditModal()
-                    location.reload()
-                } else {
-                    alert('Error: ' + (data.message || 'Error desconocido'))
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error)
-                alert('Error al guardar los cambios')
-            })
+            // Dejamos que el form haga el POST normalmente (el backend redirige con 303)
+            // No prevenimos el default
         })
     </script>
 </body>

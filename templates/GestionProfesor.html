@@ -130,31 +130,9 @@
             }
         }
 
-        function submitEditForm(form) {
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Cambios guardados correctamente');
-                    closeEditModal();
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                alert('Error al guardar los cambios');
-                console.error(error);
-            });
-        }
-
         // Asignar el evento submit al formulario de edición
         document.getElementById('editForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitEditForm(this);
+            // El form hace POST directamente (el backend redirige con 303)
         });
     </script>
 </body>

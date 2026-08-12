@@ -22,6 +22,7 @@
         <h2>Agendar Cita con psicólogo</h2>
 
         
+        <form id="form-cita-psicologo" action="/guardar_cita" method="POST">
             <label for="psicologo">Seleccionar Psicólogo:</label>
             <select id="psicologo" name="psicologo" required>
                 <option value="">-- Seleccionar --</option>
@@ -29,9 +30,8 @@
                 <option value="2">Dr. Ejemplo 2</option>
             </select>
 
-        <form action="/Psicologo_cita" method="POST">
             <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="FechaPS" required min="<?php echo date('Y-m-d'); ?>">
+            <input type="date" id="fecha" name="FechaPS" required>
 
             <label for="Hora">Hora:</label>
             <input type="time" id="hora" name="HoraPS" required>
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const formData = new FormData(form);
-            const response = await fetch('/Psicologo_cita',  {
+            const response = await fetch('/guardar_cita',  {
                 method: 'POST',
                 body: formData
             });
